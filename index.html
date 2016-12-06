@@ -10800,9 +10800,9 @@ var _brainrape$empire$Main$init = {
 	_0: {projects: _elm_lang$core$Dict$empty, error: _elm_lang$core$Maybe$Nothing, config_visible: true, token: ''},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
-var _brainrape$empire$Main$update_pipelines = F3(
-	function (pipelines, id, project) {
-		return (!_elm_lang$core$Native_Utils.eq(project.id, id)) ? project : _elm_lang$core$Native_Utils.update(
+var _brainrape$empire$Main$update_pipelines = F4(
+	function (project_id, pipelines, id, project) {
+		return (!_elm_lang$core$Native_Utils.eq(project.id, project_id)) ? project : _elm_lang$core$Native_Utils.update(
 			project,
 			{
 				branches: A2(
@@ -11194,7 +11194,7 @@ var _brainrape$empire$Main$update = F2(
 								{
 									projects: A2(
 										_elm_lang$core$Dict$map,
-										_brainrape$empire$Main$update_pipelines(_p5._1._0),
+										A2(_brainrape$empire$Main$update_pipelines, _p5._0, _p5._1._0),
 										model.projects)
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none

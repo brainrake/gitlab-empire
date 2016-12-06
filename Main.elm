@@ -90,9 +90,9 @@ update_mrs mrs id project =
     else { project | branches = project.branches |> Dict.map (\name branch ->
       { branch | mr = mrs |> filter (.source_branch >> ((==) name)) |> head } ) }
 
-update_pipelines : List Pipeline -> Int -> Project -> Project
-update_pipelines pipelines id project =
-  if project.id /= id then project
+update_pipelines : Int -> List Pipeline -> Int -> Project -> Project
+update_pipelines project_id pipelines id project =
+  if project.id /= project_id then project
     else { project | branches = project.branches |> Dict.map (\name branch ->
       { branch | pipeline = pipelines |> filter (.ref >> ((==) name)) |> head } ) }
 
@@ -119,7 +119,7 @@ update msg model = case msg of
     ( { model | projects = Dict.map (update_mrs mrs) model.projects }
     , get_pipelines project_id model.token)
   PipelinesResponse project_id (Ok pipelines) ->
-    ( { model | projects = Dict.map (update_pipelines pipelines) model.projects }
+    ( { model | projects = Dict.map (update_pipelines project_id pipelines) model.projects }
     , Cmd.none)
   _ -> (model, Cmd.none)
 
