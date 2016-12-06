@@ -1,4 +1,4 @@
-module Empire.Model exposing (Msg(..), Model, Project, Branch, MR, Status(..), status_color)
+module Empire.Model exposing (Msg(..), Model, Token, Project, Branch, Pipeline, MR, Status(..), status_color)
 
 import Http
 import Time exposing (Time)
@@ -7,11 +7,11 @@ type Msg = Tick Time
          | ProjectsResponse (Result Http.Error (List Project))
          | BranchesResponse Int (Result Http.Error (List Branch))
          | MRsResponse Int (Result Http.Error (List MR))
-         | PipelinesResponse Int (Result Http.Error
-           (List { status : String, ref : String }))
+         | PipelinesResponse Int (Result Http.Error (List Pipeline))
          | ToggleConfig
          | ChangeToken String
 
+type alias Token = String
 
 type alias Model =
   { projects : List Project
@@ -23,26 +23,28 @@ type alias Project =
   { id : Int
   , org : String
   , name : String
+  , path : String
   , description : String
   , avatar_url : String
   , open_issues_count : Int
-  , pipeline_id : Int
-  , status: Maybe Status
   , branches : List Branch }
 
 type alias Branch =
   { name : String
   , plus : Int
   , minus : Int
-  , pipeline_id : Int
-  , status : Maybe Status
+  , pipeline : Maybe Pipeline
   , mr : Maybe MR }
+
+type alias Pipeline =
+  { id : Int
+  , status : Status
+  , ref : String }
 
 type alias MR =
   { id : Int
   , title : String
   , source_branch : String
-  , pipeline_id : Int
   , status : Maybe Status }
 
 type Status = Warn | Running | Fail | Pass

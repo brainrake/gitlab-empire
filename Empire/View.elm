@@ -1,6 +1,6 @@
 module Empire.View exposing (view)
 
-import List exposing (map)
+import List exposing (map, filter)
 import Maybe
 import Maybe.Extra exposing((?))
 import Html exposing (Html, Attribute, node, text, a, div, span, table, tr, td, button, input, form, img)
@@ -11,7 +11,7 @@ import Svg.Attributes exposing (width, height, cx, cy, r, fill)
 import Bootstrap.Grid exposing (..)
 import Bootstrap.Wells exposing (..)
 
-import Empire.Model exposing (Msg(..), Model, Project, Branch, MR, Status, status_color)
+import Empire.Model exposing (Msg(..), Model, Project, Branch, Pipeline, MR, Status, status_color)
 
 
 org_url : String -> String
@@ -29,48 +29,49 @@ branch_url org project branch_name = project_url org project ++ "/tree/" ++ bran
 pipeline_url : String -> String -> Int -> String
 pipeline_url org project pipeline_id = project_url org project ++ "/pipelines/" ++ toString pipeline_id
 
-view_status : String -> String -> Int -> Maybe Status -> Html Msg
-view_status org project pipeline_id m_status =
-  a [ href (pipeline_url org project pipeline_id) ]
+view_pipeline : String -> String -> Maybe Pipeline -> Html Msg
+view_pipeline org project pipeline =
+  a [ href <| (pipeline |> Maybe.map (.id >> pipeline_url org project)) ? "" ]
     [ svg [ width "12", height "12"]
           [ circle [ cx "6", cy "6", r "6"
-                   , fill (Maybe.map status_color m_status ? "lightgrey") ] [] ]
+                   , fill <| (pipeline |> Maybe.map (.status >> status_color)) ? "lightgrey" ] [] ]
     , span [] [ text " " ] ]
 
 view_mr : String -> String -> MR -> List (Html Msg)
-view_mr org project { id, title, pipeline_id, status } =
+view_mr org project { id, title, status} =
   [ span [ style [ ("display", "inline-block"), ("width", "40px") ] ] []
   , span [ class "octicon octicon-git-pull-request"] []
-  , view_status org project pipeline_id status
+  -- , view_pipeline org project pipeline_id status
   , text " "
   , a [ href (mr_url org project id)] [ text ("!" ++ toString id ++ " " ++ title) ] ]
 
 view_branch : String -> String -> Branch -> Html Msg
-view_branch org project { name, plus, minus, pipeline_id, status, mr } = tr []
+view_branch org project { name, plus, minus, pipeline, mr } = tr []
   [ span [ style [ ("display", "inline-block"), ("width", "20px") ] ] []
   , span [ class "octicon octicon-git-branch"] []
   , span [ style [("color", "green")] ]
          [ text <| "" ] -- <| "+" ++ toString plus ]
   , span [ style [("color", "red")]]
          [ text <| if minus == 0 then "" else "-" ++ toString minus ]
-  , span [] [ view_status org project pipeline_id status ]
+  , span [] [ view_pipeline org project pipeline ]
   , span [] [ a [ href (branch_url org project name) ] [ text name ] ]
   , div [] (Maybe.map (view_mr org project) mr ? []) ]
 
 view_project : Project -> List (Html Msg)
-view_project { org, name, avatar_url, open_issues_count, branches, pipeline_id, status } =
+view_project { org, name, path, avatar_url, open_issues_count, branches } =
   [ row [ column [ ExtraSmall Six ]
           [ if String.isEmpty avatar_url
             then span [ class "octicon octicon-repo"] []
             else img [ src avatar_url, width "16px"] []
           , text " "
-          , view_status org name pipeline_id status
-          , a [ href (project_url org name) ] [ text name ] ]
+          --, view_status org name pipeline_id status
+          , a [ href (project_url org path) ] [ text name ] ]
         , column [ ExtraSmall Six ]
-          [ a [ href (project_url org name ++ "/issues") ]
+          [ a [ href (project_url org path ++ "/issues") ]
               [ text (toString open_issues_count ++ " issues") ] ] ]
   , row [ column [ ExtraSmall Twelve ]
-          [ div [] (map (view_branch org name) branches) ] ] ]
+          [ div [] (branches |> filter (.name >> ((/=) "master") )
+                             |> map (view_branch org name)) ] ] ]
 
 view_config : Bool -> String -> Html Msg
 view_config config_visible token = div []

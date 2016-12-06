@@ -4,11 +4,11 @@ import Maybe exposing (andThen)
 import Maybe.Extra exposing ((?))
 import Http
 import Platform.Cmd
-import Json.Decode as J
+import Json.Decode as J exposing (Decoder, list, field, string, int, succeed, at)
 import Json.Decode.Extra as JE exposing ((|:))
 import Time exposing (every, second)
 
-import Empire.Model exposing (Msg(..), Model, Project, Branch, MR, Status(..))
+import Empire.Model exposing (Msg(..), Model, Token, Project, Branch, Pipeline, MR, Status(..))
 import Empire.View exposing (view)
 
 
@@ -24,77 +24,83 @@ mr_status_map str =
   else if str == "unchecked" then Running
   else Warn
 
+
+mk_url : String -> Token -> String
 mk_url path token = "https://gitlab.com/api/v3" ++ path ++ "private_token=" ++ token
 
-get_pipelines token project_id = Http.send (PipelinesResponse project_id) <|
-  Http.get (mk_url ("/projects/" ++ (toString project_id) ++ "/pipelines?") token) d_pipelines
+get : String -> (Result Http.Error a -> Msg) -> Decoder a -> Token -> Cmd Msg
+get fragment constructor decoder token =
+  Http.send constructor (Http.get (mk_url fragment token) decoder)
 
-d_pipelines = J.list <| J.map2 (\status ref -> { status = status, ref = ref })
-  (J.field "status" J.string)
-  (J.field "ref" J.string)
+get_pipelines : Int -> Token -> Cmd Msg
+get_pipelines project_id = get
+  ("/projects/" ++ toString project_id ++ "/pipelines?")
+  (PipelinesResponse project_id)
+  (list <| succeed Pipeline
+      |: field "id" int
+      |: (field "status" string |> J.map status_map)
+      |: field "ref" string )
 
-get_mrs token project_id = Http.send (MRsResponse project_id) <|
-  Http.get (mk_url ("/projects/" ++ (toString project_id) ++ "/merge_requests?state=opened&") token) d_mrs
+get_mrs : Int -> Token -> Cmd Msg
+get_mrs project_id = get
+  ("/projects/" ++ (toString project_id) ++ "/merge_requests?state=opened&")
+  (MRsResponse project_id)
+  (list <| succeed MR
+    |: field "iid" int
+    |: field "title" string
+    |: field "source_branch" string
+    |: (field "merge_status" string |> J.map (mr_status_map >> Just) ))
 
-d_mrs = J.list <| J.map5 MR
-  (J.field "iid" J.int)
-  (J.field "title" J.string)
-  (J.field "source_branch" J.string)
-  (J.succeed 0)
-  (J.map (mr_status_map >> Just) <| J.field "merge_status" J.string)
+get_branches : Int -> Token -> Cmd Msg
+get_branches project_id = get
+  ("/projects/" ++ toString project_id ++ "/repository/branches?")
+  (BranchesResponse project_id)
+  (list <| succeed Branch
+    |: field "name" string
+    |: succeed 0
+    |: succeed 0
+    |: succeed Nothing
+    |: succeed Nothing)
 
-get_branches token project_id = Http.send (BranchesResponse project_id) <|
-  Http.get (mk_url ("/projects/" ++ (toString project_id) ++ "/repository/branches?") token) d_branches
-
-d_branches = J.list <| J.map6 Branch
-  (J.field "name" J.string)
-  (J.succeed 0)
-  (J.succeed 0)
-  (J.succeed 0)
-  (J.succeed Nothing)
-  (J.succeed Nothing)
-
-get_projects token = Http.send ProjectsResponse <|
-  Http.get (mk_url "/projects?" token) d_projects
-
-
-d_projects = J.list <| J.succeed Project
-  |: (J.field "id" J.int)
-  |: (J.at [ "namespace", "name" ] J.string)
-  |: (J.field "name" J.string)
-  |: (J.field "description" J.string)
-  |: (J.field "avatar_url" J.string |> JE.withDefault "")
-  |: (J.field "open_issues_count" J.int)
-  |: (J.succeed 0)
-  |: (J.succeed Nothing)
-  |: (J.succeed [])
+get_projects : Token ->  Cmd Msg
+get_projects = get "/projects?" ProjectsResponse
+  (list <| succeed Project
+    |: field "id" int
+    |: at [ "namespace", "name" ] string
+    |: field "name" string
+    |: field "path" string
+    |: field "description" string
+    |: (field "avatar_url" string |> JE.withDefault "")
+    |: field "open_issues_count" int
+    |: succeed [])
 
 
+update_project : List Project -> Project -> Project
 update_project projects project =
-  let mp = projects |> filter (.id >> ((==) project.id)) |> head
-  in { project | branches = (mp |> Maybe.map .branches) ? []
-               , status = mp |> andThen .status }
+  { project | branches = (projects |> filter (.id >> ((==) project.id))
+                                   |> map .branches |> head) ? []}
+
+update_branches : Int -> List Branch -> Project -> Project
 update_branches project_id branches project =
   if project.id == project_id
-  then { project | branches = branches |> filter (.name >> ((/=) "master")) |> map (\ b ->
-    let mmr = project.branches |> filter (.name >> ((==) b.name)) |> head
-    in { b | mr = mmr |> andThen .mr
-           , status = mmr |> andThen .status })}
+  then { project | branches = branches |> map (\ b ->
+    let mb = project.branches |> filter (.name >> ((==) b.name)) |> head
+    in { b | mr = mb |> andThen .mr
+           , pipeline = mb |> andThen .pipeline })}
   else project
 
+update_mrs : Int -> List MR -> Project -> Project
 update_mrs project_id mrs project =
   if project.id == project_id
   then { project | branches = project.branches |> map (\b ->
     { b | mr = mrs |> filter (.source_branch >> ((==) b.name)) |> head }) }
   else project
 
+update_pipelines : Int -> List Pipeline -> Project -> Project
 update_pipelines project_id pipelines project =
   if project.id /= project_id then project else { project
     | branches = project.branches |> map (\b ->
-      { b | status = (pipelines |> filter (.ref >> ((==) b.name)) |> head
-                              |> Maybe.map (.status >> status_map)) })
-    , status = (pipelines |> filter (.ref >> ((==) "master")) |> head
-                          |> Maybe.map (.status >> status_map)) }
+      { b | pipeline = pipelines |> filter (.ref >> ((==) b.name)) |> head } ) }
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -104,17 +110,17 @@ update msg model = case msg of
   ProjectsResponse (Ok projects) ->
     ( { model | projects = map (update_project model.projects) projects
               , error = Nothing }
-    , projects |> map (.id >> get_branches model.token) |> Cmd.batch )
+    , projects |> map (\p -> get_branches p.id model.token) |> Cmd.batch )
   ProjectsResponse (Err err) ->
     ( { model | error = Just <| toString err }
     , Cmd.none)
   BranchesResponse project_id (Ok branches) ->
     ( { model | projects = map (update_branches project_id branches) model.projects}
-    , get_mrs model.token project_id )
+    , get_mrs project_id model.token )
   BranchesResponse project_id (Err err) -> (model, Cmd.none)
   MRsResponse project_id (Ok mrs) ->
     ( { model | projects = map (update_mrs project_id mrs) model.projects }
-    , get_pipelines model.token project_id)
+    , get_pipelines project_id model.token)
   MRsResponse project_id (Err err) -> (model, Cmd.none)
   PipelinesResponse project_id (Ok pipelines) ->
     ( { model | projects = map (update_pipelines project_id pipelines) model.projects }

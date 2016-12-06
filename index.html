@@ -9052,17 +9052,21 @@ var _brainrape$empire$Empire_Model$Model = F4(
 	function (a, b, c, d) {
 		return {projects: a, error: b, config_visible: c, token: d};
 	});
-var _brainrape$empire$Empire_Model$Project = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {id: a, org: b, name: c, description: d, avatar_url: e, open_issues_count: f, pipeline_id: g, status: h, branches: i};
+var _brainrape$empire$Empire_Model$Project = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, org: b, name: c, path: d, description: e, avatar_url: f, open_issues_count: g, branches: h};
 	});
-var _brainrape$empire$Empire_Model$Branch = F6(
-	function (a, b, c, d, e, f) {
-		return {name: a, plus: b, minus: c, pipeline_id: d, status: e, mr: f};
-	});
-var _brainrape$empire$Empire_Model$MR = F5(
+var _brainrape$empire$Empire_Model$Branch = F5(
 	function (a, b, c, d, e) {
-		return {id: a, title: b, source_branch: c, pipeline_id: d, status: e};
+		return {name: a, plus: b, minus: c, pipeline: d, mr: e};
+	});
+var _brainrape$empire$Empire_Model$Pipeline = F3(
+	function (a, b, c) {
+		return {id: a, status: b, ref: c};
+	});
+var _brainrape$empire$Empire_Model$MR = F4(
+	function (a, b, c, d) {
+		return {id: a, title: b, source_branch: c, status: d};
 	});
 var _brainrape$empire$Empire_Model$ChangeToken = function (a) {
 	return {ctor: 'ChangeToken', _0: a};
@@ -9907,88 +9911,6 @@ var _brainrape$empire$Empire_View$mr_url = F3(
 				'/merge_requests/',
 				_elm_lang$core$Basics$toString(mr_id)));
 	});
-var _brainrape$empire$Empire_View$branch_url = F3(
-	function (org, project, branch_name) {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			A2(_brainrape$empire$Empire_View$project_url, org, project),
-			A2(_elm_lang$core$Basics_ops['++'], '/tree/', branch_name));
-	});
-var _brainrape$empire$Empire_View$pipeline_url = F3(
-	function (org, project, pipeline_id) {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			A2(_brainrape$empire$Empire_View$project_url, org, project),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'/pipelines/',
-				_elm_lang$core$Basics$toString(pipeline_id)));
-	});
-var _brainrape$empire$Empire_View$view_status = F4(
-	function (org, project, pipeline_id, m_status) {
-		return A2(
-			_elm_lang$html$Html$a,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$href(
-					A3(_brainrape$empire$Empire_View$pipeline_url, org, project, pipeline_id)),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$svg$Svg$svg,
-					{
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$width('12'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$height('12'),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$svg$Svg$circle,
-							{
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$cx('6'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$cy('6'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$r('6'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$fill(
-												A2(
-													_elm_community$maybe_extra$Maybe_Extra_ops['?'],
-													A2(_elm_lang$core$Maybe$map, _brainrape$empire$Empire_Model$status_color, m_status),
-													'lightgrey')),
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$span,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(' '),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
 var _brainrape$empire$Empire_View$view_mr = F3(
 	function (org, project, _p0) {
 		var _p1 = _p0;
@@ -10024,44 +9946,144 @@ var _brainrape$empire$Empire_View$view_mr = F3(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: A4(_brainrape$empire$Empire_View$view_status, org, project, _p1.pipeline_id, _p1.status),
+					_0: _elm_lang$html$Html$text(' '),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(' '),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$a,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$href(
-										A3(_brainrape$empire$Empire_View$mr_url, org, project, _p2)),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$href(
+									A3(_brainrape$empire$Empire_View$mr_url, org, project, _p2)),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'!',
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											'!',
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p2),
-												A2(_elm_lang$core$Basics_ops['++'], ' ', _p1.title)))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
+											_elm_lang$core$Basics$toString(_p2),
+											A2(_elm_lang$core$Basics_ops['++'], ' ', _p1.title)))),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
 					}
 				}
 			}
 		};
 	});
+var _brainrape$empire$Empire_View$branch_url = F3(
+	function (org, project, branch_name) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(_brainrape$empire$Empire_View$project_url, org, project),
+			A2(_elm_lang$core$Basics_ops['++'], '/tree/', branch_name));
+	});
+var _brainrape$empire$Empire_View$pipeline_url = F3(
+	function (org, project, pipeline_id) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(_brainrape$empire$Empire_View$project_url, org, project),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/pipelines/',
+				_elm_lang$core$Basics$toString(pipeline_id)));
+	});
+var _brainrape$empire$Empire_View$view_pipeline = F3(
+	function (org, project, pipeline) {
+		return A2(
+			_elm_lang$html$Html$a,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$href(
+					A2(
+						_elm_community$maybe_extra$Maybe_Extra_ops['?'],
+						A2(
+							_elm_lang$core$Maybe$map,
+							function (_p3) {
+								return A3(
+									_brainrape$empire$Empire_View$pipeline_url,
+									org,
+									project,
+									function (_) {
+										return _.id;
+									}(_p3));
+							},
+							pipeline),
+						'')),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$svg,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$width('12'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$height('12'),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$circle,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$cx('6'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$cy('6'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$r('6'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$fill(
+												A2(
+													_elm_community$maybe_extra$Maybe_Extra_ops['?'],
+													A2(
+														_elm_lang$core$Maybe$map,
+														function (_p4) {
+															return _brainrape$empire$Empire_Model$status_color(
+																function (_) {
+																	return _.status;
+																}(_p4));
+														},
+														pipeline),
+													'lightgrey')),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(' '),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _brainrape$empire$Empire_View$view_branch = F3(
-	function (org, project, _p3) {
-		var _p4 = _p3;
-		var _p6 = _p4.name;
-		var _p5 = _p4.minus;
+	function (org, project, _p5) {
+		var _p6 = _p5;
+		var _p8 = _p6.name;
+		var _p7 = _p6.minus;
 		return A2(
 			_elm_lang$html$Html$tr,
 			{ctor: '[]'},
@@ -10130,10 +10152,10 @@ var _brainrape$empire$Empire_View$view_branch = F3(
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Native_Utils.eq(_p5, 0) ? '' : A2(
+										_elm_lang$core$Native_Utils.eq(_p7, 0) ? '' : A2(
 											_elm_lang$core$Basics_ops['++'],
 											'-',
-											_elm_lang$core$Basics$toString(_p5))),
+											_elm_lang$core$Basics$toString(_p7))),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -10143,7 +10165,7 @@ var _brainrape$empire$Empire_View$view_branch = F3(
 									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: A4(_brainrape$empire$Empire_View$view_status, org, project, _p4.pipeline_id, _p4.status),
+										_0: A3(_brainrape$empire$Empire_View$view_pipeline, org, project, _p6.pipeline),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -10158,12 +10180,12 @@ var _brainrape$empire$Empire_View$view_branch = F3(
 												{
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$href(
-														A3(_brainrape$empire$Empire_View$branch_url, org, project, _p6)),
+														A3(_brainrape$empire$Empire_View$branch_url, org, project, _p8)),
 													_1: {ctor: '[]'}
 												},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text(_p6),
+													_0: _elm_lang$html$Html$text(_p8),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -10178,7 +10200,7 @@ var _brainrape$empire$Empire_View$view_branch = F3(
 												A2(
 													_elm_lang$core$Maybe$map,
 													A2(_brainrape$empire$Empire_View$view_mr, org, project),
-													_p4.mr),
+													_p6.mr),
 												{ctor: '[]'})),
 										_1: {ctor: '[]'}
 									}
@@ -10189,11 +10211,12 @@ var _brainrape$empire$Empire_View$view_branch = F3(
 				}
 			});
 	});
-var _brainrape$empire$Empire_View$view_project = function (_p7) {
-	var _p8 = _p7;
-	var _p11 = _p8.org;
-	var _p10 = _p8.name;
-	var _p9 = _p8.avatar_url;
+var _brainrape$empire$Empire_View$view_project = function (_p9) {
+	var _p10 = _p9;
+	var _p15 = _p10.path;
+	var _p14 = _p10.org;
+	var _p13 = _p10.name;
+	var _p12 = _p10.avatar_url;
 	return {
 		ctor: '::',
 		_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$row(
@@ -10208,7 +10231,7 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$core$String$isEmpty(_p9) ? A2(
+						_0: _elm_lang$core$String$isEmpty(_p12) ? A2(
 							_elm_lang$html$Html$span,
 							{
 								ctor: '::',
@@ -10219,7 +10242,7 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 							_elm_lang$html$Html$img,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$src(_p9),
+								_0: _elm_lang$html$Html_Attributes$src(_p12),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$svg$Svg_Attributes$width('16px'),
@@ -10232,24 +10255,20 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 							_0: _elm_lang$html$Html$text(' '),
 							_1: {
 								ctor: '::',
-								_0: A4(_brainrape$empire$Empire_View$view_status, _p11, _p10, _p8.pipeline_id, _p8.status),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$href(
-												A2(_brainrape$empire$Empire_View$project_url, _p11, _p10)),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(_p10),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$href(
+											A2(_brainrape$empire$Empire_View$project_url, _p14, _p15)),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(_p13),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
 							}
 						}
 					}),
@@ -10271,7 +10290,7 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 									_0: _elm_lang$html$Html_Attributes$href(
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											A2(_brainrape$empire$Empire_View$project_url, _p11, _p10),
+											A2(_brainrape$empire$Empire_View$project_url, _p14, _p15),
 											'/issues')),
 									_1: {ctor: '[]'}
 								},
@@ -10280,7 +10299,7 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 									_0: _elm_lang$html$Html$text(
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p8.open_issues_count),
+											_elm_lang$core$Basics$toString(_p10.open_issues_count),
 											' issues')),
 									_1: {ctor: '[]'}
 								}),
@@ -10308,8 +10327,21 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 								{ctor: '[]'},
 								A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Empire_View$view_branch, _p11, _p10),
-									_p8.branches)),
+									A2(_brainrape$empire$Empire_View$view_branch, _p14, _p13),
+									A2(
+										_elm_lang$core$List$filter,
+										function (_p11) {
+											return A2(
+												F2(
+													function (x, y) {
+														return !_elm_lang$core$Native_Utils.eq(x, y);
+													}),
+												'master',
+												function (_) {
+													return _.name;
+												}(_p11));
+										},
+										_p10.branches))),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -10318,8 +10350,8 @@ var _brainrape$empire$Empire_View$view_project = function (_p7) {
 		}
 	};
 };
-var _brainrape$empire$Empire_View$view = function (_p12) {
-	var _p13 = _p12;
+var _brainrape$empire$Empire_View$view = function (_p16) {
+	var _p17 = _p16;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -10328,11 +10360,11 @@ var _brainrape$empire$Empire_View$view = function (_p12) {
 			A2(_elm_lang$core$List$map, _brainrape$empire$Empire_View$stylesheet, _brainrape$empire$Empire_View$css_urls),
 			{
 				ctor: '::',
-				_0: A2(_brainrape$empire$Empire_View$view_config, _p13.config_visible, _p13.token),
+				_0: A2(_brainrape$empire$Empire_View$view_config, _p17.config_visible, _p17.token),
 				_1: {
 					ctor: '::',
 					_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$containerFluid(
-						A2(_elm_lang$core$List$concatMap, _brainrape$empire$Empire_View$view_project, _p13.projects)),
+						A2(_elm_lang$core$List$concatMap, _brainrape$empire$Empire_View$view_project, _p17.projects)),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -10349,7 +10381,7 @@ var _brainrape$empire$Empire_View$view = function (_p12) {
 												function (x, y) {
 													return A2(_elm_lang$core$Basics_ops['++'], x, y);
 												})('Error: '),
-											_p13.error),
+											_p17.error),
 										'')),
 								_1: {ctor: '[]'}
 							}),
@@ -10657,6 +10689,37 @@ var _brainrape$empire$Main$init = {
 	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
+var _brainrape$empire$Main$update_pipelines = F3(
+	function (project_id, pipelines, project) {
+		return (!_elm_lang$core$Native_Utils.eq(project.id, project_id)) ? project : _elm_lang$core$Native_Utils.update(
+			project,
+			{
+				branches: A2(
+					_elm_lang$core$List$map,
+					function (b) {
+						return _elm_lang$core$Native_Utils.update(
+							b,
+							{
+								pipeline: _elm_lang$core$List$head(
+									A2(
+										_elm_lang$core$List$filter,
+										function (_p0) {
+											return A2(
+												F2(
+													function (x, y) {
+														return _elm_lang$core$Native_Utils.eq(x, y);
+													}),
+												b.name,
+												function (_) {
+													return _.ref;
+												}(_p0));
+										},
+										pipelines))
+							});
+					},
+					project.branches)
+			});
+	});
 var _brainrape$empire$Main$update_mrs = F3(
 	function (project_id, mrs, project) {
 		return _elm_lang$core$Native_Utils.eq(project.id, project_id) ? _elm_lang$core$Native_Utils.update(
@@ -10671,7 +10734,7 @@ var _brainrape$empire$Main$update_mrs = F3(
 								mr: _elm_lang$core$List$head(
 									A2(
 										_elm_lang$core$List$filter,
-										function (_p0) {
+										function (_p1) {
 											return A2(
 												F2(
 													function (x, y) {
@@ -10680,7 +10743,7 @@ var _brainrape$empire$Main$update_mrs = F3(
 												b.name,
 												function (_) {
 													return _.source_branch;
-												}(_p0));
+												}(_p1));
 										},
 										mrs))
 							});
@@ -10696,10 +10759,10 @@ var _brainrape$empire$Main$update_branches = F3(
 				branches: A2(
 					_elm_lang$core$List$map,
 					function (b) {
-						var mmr = _elm_lang$core$List$head(
+						var mb = _elm_lang$core$List$head(
 							A2(
 								_elm_lang$core$List$filter,
-								function (_p1) {
+								function (_p2) {
 									return A2(
 										F2(
 											function (x, y) {
@@ -10708,7 +10771,7 @@ var _brainrape$empire$Main$update_branches = F3(
 										b.name,
 										function (_) {
 											return _.name;
-										}(_p1));
+										}(_p2));
 								},
 								project.branches));
 						return _elm_lang$core$Native_Utils.update(
@@ -10719,71 +10782,102 @@ var _brainrape$empire$Main$update_branches = F3(
 									function (_) {
 										return _.mr;
 									},
-									mmr),
-								status: A2(
+									mb),
+								pipeline: A2(
 									_elm_lang$core$Maybe$andThen,
 									function (_) {
-										return _.status;
+										return _.pipeline;
 									},
-									mmr)
+									mb)
 							});
 					},
-					A2(
-						_elm_lang$core$List$filter,
-						function (_p2) {
-							return A2(
-								F2(
-									function (x, y) {
-										return !_elm_lang$core$Native_Utils.eq(x, y);
-									}),
-								'master',
-								function (_) {
-									return _.name;
-								}(_p2));
-						},
-						branches))
+					branches)
 			}) : project;
 	});
 var _brainrape$empire$Main$update_project = F2(
 	function (projects, project) {
-		var mp = _elm_lang$core$List$head(
-			A2(
-				_elm_lang$core$List$filter,
-				function (_p3) {
-					return A2(
-						F2(
-							function (x, y) {
-								return _elm_lang$core$Native_Utils.eq(x, y);
-							}),
-						project.id,
-						function (_) {
-							return _.id;
-						}(_p3));
-				},
-				projects));
 		return _elm_lang$core$Native_Utils.update(
 			project,
 			{
 				branches: A2(
 					_elm_community$maybe_extra$Maybe_Extra_ops['?'],
-					A2(
-						_elm_lang$core$Maybe$map,
-						function (_) {
-							return _.branches;
-						},
-						mp),
-					{ctor: '[]'}),
-				status: A2(
-					_elm_lang$core$Maybe$andThen,
-					function (_) {
-						return _.status;
-					},
-					mp)
+					_elm_lang$core$List$head(
+						A2(
+							_elm_lang$core$List$map,
+							function (_) {
+								return _.branches;
+							},
+							A2(
+								_elm_lang$core$List$filter,
+								function (_p3) {
+									return A2(
+										F2(
+											function (x, y) {
+												return _elm_lang$core$Native_Utils.eq(x, y);
+											}),
+										project.id,
+										function (_) {
+											return _.id;
+										}(_p3));
+								},
+								projects))),
+					{ctor: '[]'})
 			});
 	});
-var _brainrape$empire$Main$d_projects = _elm_lang$core$Json_Decode$list(
-	A2(
-		_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+var _brainrape$empire$Main$mk_url = F2(
+	function (path, token) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'https://gitlab.com/api/v3',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				path,
+				A2(_elm_lang$core$Basics_ops['++'], 'private_token=', token)));
+	});
+var _brainrape$empire$Main$get = F4(
+	function (fragment, constructor, decoder, token) {
+		return A2(
+			_elm_lang$http$Http$send,
+			constructor,
+			A2(
+				_elm_lang$http$Http$get,
+				A2(_brainrape$empire$Main$mk_url, fragment, token),
+				decoder));
+	});
+var _brainrape$empire$Main$get_branches = function (project_id) {
+	return A3(
+		_brainrape$empire$Main$get,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/projects/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(project_id),
+				'/repository/branches?')),
+		_brainrape$empire$Empire_Model$BranchesResponse(project_id),
+		_elm_lang$core$Json_Decode$list(
+			A2(
+				_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+				A2(
+					_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+					A2(
+						_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+						A2(
+							_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+							A2(
+								_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+								_elm_lang$core$Json_Decode$succeed(_brainrape$empire$Empire_Model$Branch),
+								A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
+							_elm_lang$core$Json_Decode$succeed(0)),
+						_elm_lang$core$Json_Decode$succeed(0)),
+					_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)),
+				_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing))));
+};
+var _brainrape$empire$Main$get_projects = A3(
+	_brainrape$empire$Main$get,
+	'/projects?',
+	_brainrape$empire$Empire_Model$ProjectsResponse,
+	_elm_lang$core$Json_Decode$list(
 		A2(
 			_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
 			A2(
@@ -10815,198 +10909,83 @@ var _brainrape$empire$Main$d_projects = _elm_lang$core$Json_Decode$list(
 										},
 										_elm_lang$core$Json_Decode$string)),
 								A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
-							A2(_elm_lang$core$Json_Decode$field, 'description', _elm_lang$core$Json_Decode$string)),
-						A2(
-							_elm_community$json_extra$Json_Decode_Extra$withDefault,
-							'',
-							A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string))),
-					A2(_elm_lang$core$Json_Decode$field, 'open_issues_count', _elm_lang$core$Json_Decode$int)),
-				_elm_lang$core$Json_Decode$succeed(0)),
-			_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)),
-		_elm_lang$core$Json_Decode$succeed(
-			{ctor: '[]'})));
-var _brainrape$empire$Main$d_branches = _elm_lang$core$Json_Decode$list(
-	A7(
-		_elm_lang$core$Json_Decode$map6,
-		_brainrape$empire$Empire_Model$Branch,
-		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-		_elm_lang$core$Json_Decode$succeed(0),
-		_elm_lang$core$Json_Decode$succeed(0),
-		_elm_lang$core$Json_Decode$succeed(0),
-		_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing),
-		_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)));
-var _brainrape$empire$Main$d_pipelines = _elm_lang$core$Json_Decode$list(
-	A3(
-		_elm_lang$core$Json_Decode$map2,
-		F2(
-			function (status, ref) {
-				return {status: status, ref: ref};
-			}),
-		A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'ref', _elm_lang$core$Json_Decode$string)));
-var _brainrape$empire$Main$mk_url = F2(
-	function (path, token) {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			'https://gitlab.com/api/v3',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				path,
-				A2(_elm_lang$core$Basics_ops['++'], 'private_token=', token)));
-	});
-var _brainrape$empire$Main$get_pipelines = F2(
-	function (token, project_id) {
-		return A2(
-			_elm_lang$http$Http$send,
-			_brainrape$empire$Empire_Model$PipelinesResponse(project_id),
-			A2(
-				_elm_lang$http$Http$get,
-				A2(
-					_brainrape$empire$Main$mk_url,
+							A2(_elm_lang$core$Json_Decode$field, 'path', _elm_lang$core$Json_Decode$string)),
+						A2(_elm_lang$core$Json_Decode$field, 'description', _elm_lang$core$Json_Decode$string)),
 					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'/projects/',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(project_id),
-							'/pipelines?')),
-					token),
-				_brainrape$empire$Main$d_pipelines));
-	});
-var _brainrape$empire$Main$get_branches = F2(
-	function (token, project_id) {
-		return A2(
-			_elm_lang$http$Http$send,
-			_brainrape$empire$Empire_Model$BranchesResponse(project_id),
-			A2(
-				_elm_lang$http$Http$get,
-				A2(
-					_brainrape$empire$Main$mk_url,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'/projects/',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(project_id),
-							'/repository/branches?')),
-					token),
-				_brainrape$empire$Main$d_branches));
-	});
-var _brainrape$empire$Main$get_projects = function (token) {
-	return A2(
-		_elm_lang$http$Http$send,
-		_brainrape$empire$Empire_Model$ProjectsResponse,
-		A2(
-			_elm_lang$http$Http$get,
-			A2(_brainrape$empire$Main$mk_url, '/projects?', token),
-			_brainrape$empire$Main$d_projects));
-};
+						_elm_community$json_extra$Json_Decode_Extra$withDefault,
+						'',
+						A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string))),
+				A2(_elm_lang$core$Json_Decode$field, 'open_issues_count', _elm_lang$core$Json_Decode$int)),
+			_elm_lang$core$Json_Decode$succeed(
+				{ctor: '[]'}))));
 var _brainrape$empire$Main$mr_status_map = function (str) {
 	return _elm_lang$core$Native_Utils.eq(str, 'can_be_merged') ? _brainrape$empire$Empire_Model$Pass : (_elm_lang$core$Native_Utils.eq(str, 'unchecked') ? _brainrape$empire$Empire_Model$Running : _brainrape$empire$Empire_Model$Warn);
 };
-var _brainrape$empire$Main$d_mrs = _elm_lang$core$Json_Decode$list(
-	A6(
-		_elm_lang$core$Json_Decode$map5,
-		_brainrape$empire$Empire_Model$MR,
-		A2(_elm_lang$core$Json_Decode$field, 'iid', _elm_lang$core$Json_Decode$int),
-		A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode$field, 'source_branch', _elm_lang$core$Json_Decode$string),
-		_elm_lang$core$Json_Decode$succeed(0),
+var _brainrape$empire$Main$get_mrs = function (project_id) {
+	return A3(
+		_brainrape$empire$Main$get,
 		A2(
-			_elm_lang$core$Json_Decode$map,
-			function (_p4) {
-				return _elm_lang$core$Maybe$Just(
-					_brainrape$empire$Main$mr_status_map(_p4));
-			},
-			A2(_elm_lang$core$Json_Decode$field, 'merge_status', _elm_lang$core$Json_Decode$string))));
-var _brainrape$empire$Main$get_mrs = F2(
-	function (token, project_id) {
-		return A2(
-			_elm_lang$http$Http$send,
-			_brainrape$empire$Empire_Model$MRsResponse(project_id),
+			_elm_lang$core$Basics_ops['++'],
+			'/projects/',
 			A2(
-				_elm_lang$http$Http$get,
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(project_id),
+				'/merge_requests?state=opened&')),
+		_brainrape$empire$Empire_Model$MRsResponse(project_id),
+		_elm_lang$core$Json_Decode$list(
+			A2(
+				_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
 				A2(
-					_brainrape$empire$Main$mk_url,
+					_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
 					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'/projects/',
+						_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
 						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(project_id),
-							'/merge_requests?state=opened&')),
-					token),
-				_brainrape$empire$Main$d_mrs));
-	});
+							_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+							_elm_lang$core$Json_Decode$succeed(_brainrape$empire$Empire_Model$MR),
+							A2(_elm_lang$core$Json_Decode$field, 'iid', _elm_lang$core$Json_Decode$int)),
+						A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string)),
+					A2(_elm_lang$core$Json_Decode$field, 'source_branch', _elm_lang$core$Json_Decode$string)),
+				A2(
+					_elm_lang$core$Json_Decode$map,
+					function (_p4) {
+						return _elm_lang$core$Maybe$Just(
+							_brainrape$empire$Main$mr_status_map(_p4));
+					},
+					A2(_elm_lang$core$Json_Decode$field, 'merge_status', _elm_lang$core$Json_Decode$string)))));
+};
 var _brainrape$empire$Main$status_map = function (str) {
 	return _elm_lang$core$Native_Utils.eq(str, 'success') ? _brainrape$empire$Empire_Model$Pass : (_elm_lang$core$Native_Utils.eq(str, 'running') ? _brainrape$empire$Empire_Model$Running : _brainrape$empire$Empire_Model$Warn);
 };
-var _brainrape$empire$Main$update_pipelines = F3(
-	function (project_id, pipelines, project) {
-		return (!_elm_lang$core$Native_Utils.eq(project.id, project_id)) ? project : _elm_lang$core$Native_Utils.update(
-			project,
-			{
-				branches: A2(
-					_elm_lang$core$List$map,
-					function (b) {
-						return _elm_lang$core$Native_Utils.update(
-							b,
-							{
-								status: A2(
-									_elm_lang$core$Maybe$map,
-									function (_p5) {
-										return _brainrape$empire$Main$status_map(
-											function (_) {
-												return _.status;
-											}(_p5));
-									},
-									_elm_lang$core$List$head(
-										A2(
-											_elm_lang$core$List$filter,
-											function (_p6) {
-												return A2(
-													F2(
-														function (x, y) {
-															return _elm_lang$core$Native_Utils.eq(x, y);
-														}),
-													b.name,
-													function (_) {
-														return _.ref;
-													}(_p6));
-											},
-											pipelines)))
-							});
-					},
-					project.branches),
-				status: A2(
-					_elm_lang$core$Maybe$map,
-					function (_p7) {
-						return _brainrape$empire$Main$status_map(
-							function (_) {
-								return _.status;
-							}(_p7));
-					},
-					_elm_lang$core$List$head(
-						A2(
-							_elm_lang$core$List$filter,
-							function (_p8) {
-								return A2(
-									F2(
-										function (x, y) {
-											return _elm_lang$core$Native_Utils.eq(x, y);
-										}),
-									'master',
-									function (_) {
-										return _.ref;
-									}(_p8));
-							},
-							pipelines)))
-			});
-	});
+var _brainrape$empire$Main$get_pipelines = function (project_id) {
+	return A3(
+		_brainrape$empire$Main$get,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/projects/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(project_id),
+				'/pipelines?')),
+		_brainrape$empire$Empire_Model$PipelinesResponse(project_id),
+		_elm_lang$core$Json_Decode$list(
+			A2(
+				_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+				A2(
+					_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+					A2(
+						_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+						_elm_lang$core$Json_Decode$succeed(_brainrape$empire$Empire_Model$Pipeline),
+						A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)),
+					A2(
+						_elm_lang$core$Json_Decode$map,
+						_brainrape$empire$Main$status_map,
+						A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string))),
+				A2(_elm_lang$core$Json_Decode$field, 'ref', _elm_lang$core$Json_Decode$string))));
+};
 var _brainrape$empire$Main$update = F2(
 	function (msg, model) {
-		var _p9 = msg;
-		switch (_p9.ctor) {
+		var _p5 = msg;
+		switch (_p5.ctor) {
 			case 'Tick':
 				return {
 					ctor: '_Tuple2',
@@ -11014,8 +10993,8 @@ var _brainrape$empire$Main$update = F2(
 					_1: (model.config_visible || _elm_lang$core$String$isEmpty(model.token)) ? _elm_lang$core$Platform_Cmd$none : _brainrape$empire$Main$get_projects(model.token)
 				};
 			case 'ProjectsResponse':
-				if (_p9._0.ctor === 'Ok') {
-					var _p11 = _p9._0._0;
+				if (_p5._0.ctor === 'Ok') {
+					var _p6 = _p5._0._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11024,21 +11003,16 @@ var _brainrape$empire$Main$update = F2(
 								projects: A2(
 									_elm_lang$core$List$map,
 									_brainrape$empire$Main$update_project(model.projects),
-									_p11),
+									_p6),
 								error: _elm_lang$core$Maybe$Nothing
 							}),
 						_1: _elm_lang$core$Platform_Cmd$batch(
 							A2(
 								_elm_lang$core$List$map,
-								function (_p10) {
-									return A2(
-										_brainrape$empire$Main$get_branches,
-										model.token,
-										function (_) {
-											return _.id;
-										}(_p10));
+								function (p) {
+									return A2(_brainrape$empire$Main$get_branches, p.id, model.token);
 								},
-								_p11))
+								_p6))
 					};
 				} else {
 					return {
@@ -11047,14 +11021,14 @@ var _brainrape$empire$Main$update = F2(
 							model,
 							{
 								error: _elm_lang$core$Maybe$Just(
-									_elm_lang$core$Basics$toString(_p9._0._0))
+									_elm_lang$core$Basics$toString(_p5._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'BranchesResponse':
-				if (_p9._1.ctor === 'Ok') {
-					var _p12 = _p9._0;
+				if (_p5._1.ctor === 'Ok') {
+					var _p7 = _p5._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11062,17 +11036,17 @@ var _brainrape$empire$Main$update = F2(
 							{
 								projects: A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Main$update_branches, _p12, _p9._1._0),
+									A2(_brainrape$empire$Main$update_branches, _p7, _p5._1._0),
 									model.projects)
 							}),
-						_1: A2(_brainrape$empire$Main$get_mrs, model.token, _p12)
+						_1: A2(_brainrape$empire$Main$get_mrs, _p7, model.token)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'MRsResponse':
-				if (_p9._1.ctor === 'Ok') {
-					var _p13 = _p9._0;
+				if (_p5._1.ctor === 'Ok') {
+					var _p8 = _p5._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11080,16 +11054,16 @@ var _brainrape$empire$Main$update = F2(
 							{
 								projects: A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Main$update_mrs, _p13, _p9._1._0),
+									A2(_brainrape$empire$Main$update_mrs, _p8, _p5._1._0),
 									model.projects)
 							}),
-						_1: A2(_brainrape$empire$Main$get_pipelines, model.token, _p13)
+						_1: A2(_brainrape$empire$Main$get_pipelines, _p8, model.token)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'PipelinesResponse':
-				if (_p9._1.ctor === 'Ok') {
+				if (_p5._1.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11097,7 +11071,7 @@ var _brainrape$empire$Main$update = F2(
 							{
 								projects: A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Main$update_pipelines, _p9._0, _p9._1._0),
+									A2(_brainrape$empire$Main$update_pipelines, _p5._0, _p5._1._0),
 									model.projects)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
@@ -11118,7 +11092,7 @@ var _brainrape$empire$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{token: _p9._0}),
+						{token: _p5._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -11128,7 +11102,7 @@ var _brainrape$empire$Main$main = _elm_lang$html$Html$program(
 		init: _brainrape$empire$Main$init,
 		update: _brainrape$empire$Main$update,
 		view: _brainrape$empire$Empire_View$view,
-		subscriptions: function (_p14) {
+		subscriptions: function (_p9) {
 			return A2(_elm_lang$core$Time$every, 60 * _elm_lang$core$Time$second, _brainrape$empire$Empire_Model$Tick);
 		}
 	})();
