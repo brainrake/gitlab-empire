@@ -10913,7 +10913,15 @@ var _brainrape$empire$Main$get_projects = A3(
 			_elm_lang$core$Json_Decode$succeed(
 				{ctor: '[]'}))));
 var _brainrape$empire$Main$mr_status_map = function (str) {
-	return _elm_lang$core$Native_Utils.eq(str, 'can_be_merged') ? _brainrape$empire$Empire_Model$Pass : (_elm_lang$core$Native_Utils.eq(str, 'unchecked') ? _brainrape$empire$Empire_Model$Running : _brainrape$empire$Empire_Model$Warn);
+	var _p4 = str;
+	switch (_p4) {
+		case 'can_be_merged':
+			return _brainrape$empire$Empire_Model$Pass;
+		case 'unchecked':
+			return _brainrape$empire$Empire_Model$Running;
+		default:
+			return _brainrape$empire$Empire_Model$Warn;
+	}
 };
 var _brainrape$empire$Main$get_mrs = function (project_id) {
 	return A3(
@@ -10941,14 +10949,22 @@ var _brainrape$empire$Main$get_mrs = function (project_id) {
 					A2(_elm_lang$core$Json_Decode$field, 'source_branch', _elm_lang$core$Json_Decode$string)),
 				A2(
 					_elm_lang$core$Json_Decode$map,
-					function (_p4) {
+					function (_p5) {
 						return _elm_lang$core$Maybe$Just(
-							_brainrape$empire$Main$mr_status_map(_p4));
+							_brainrape$empire$Main$mr_status_map(_p5));
 					},
 					A2(_elm_lang$core$Json_Decode$field, 'merge_status', _elm_lang$core$Json_Decode$string)))));
 };
 var _brainrape$empire$Main$status_map = function (str) {
-	return _elm_lang$core$Native_Utils.eq(str, 'success') ? _brainrape$empire$Empire_Model$Pass : (_elm_lang$core$Native_Utils.eq(str, 'running') ? _brainrape$empire$Empire_Model$Running : _brainrape$empire$Empire_Model$Warn);
+	var _p6 = str;
+	switch (_p6) {
+		case 'success':
+			return _brainrape$empire$Empire_Model$Pass;
+		case 'running':
+			return _brainrape$empire$Empire_Model$Running;
+		default:
+			return _brainrape$empire$Empire_Model$Warn;
+	}
 };
 var _brainrape$empire$Main$get_pipelines = function (project_id) {
 	return A3(
@@ -10978,8 +10994,8 @@ var _brainrape$empire$Main$get_pipelines = function (project_id) {
 };
 var _brainrape$empire$Main$update = F2(
 	function (msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
+		var _p7 = msg;
+		switch (_p7.ctor) {
 			case 'Tick':
 				return {
 					ctor: '_Tuple2',
@@ -10987,8 +11003,8 @@ var _brainrape$empire$Main$update = F2(
 					_1: (model.config_visible || _elm_lang$core$String$isEmpty(model.token)) ? _elm_lang$core$Platform_Cmd$none : _brainrape$empire$Main$get_projects(model.token)
 				};
 			case 'ProjectsResponse':
-				if (_p5._0.ctor === 'Ok') {
-					var _p6 = _p5._0._0;
+				if (_p7._0.ctor === 'Ok') {
+					var _p8 = _p7._0._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -10997,7 +11013,7 @@ var _brainrape$empire$Main$update = F2(
 								projects: A2(
 									_elm_lang$core$List$map,
 									_brainrape$empire$Main$update_project(model.projects),
-									_p6),
+									_p8),
 								error: _elm_lang$core$Maybe$Nothing
 							}),
 						_1: _elm_lang$core$Platform_Cmd$batch(
@@ -11006,7 +11022,7 @@ var _brainrape$empire$Main$update = F2(
 								function (p) {
 									return A2(_brainrape$empire$Main$get_branches, p.id, model.token);
 								},
-								_p6))
+								_p8))
 					};
 				} else {
 					return {
@@ -11015,14 +11031,14 @@ var _brainrape$empire$Main$update = F2(
 							model,
 							{
 								error: _elm_lang$core$Maybe$Just(
-									_elm_lang$core$Basics$toString(_p5._0._0))
+									_elm_lang$core$Basics$toString(_p7._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'BranchesResponse':
-				if (_p5._1.ctor === 'Ok') {
-					var _p7 = _p5._0;
+				if (_p7._1.ctor === 'Ok') {
+					var _p9 = _p7._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11030,17 +11046,17 @@ var _brainrape$empire$Main$update = F2(
 							{
 								projects: A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Main$update_branches, _p7, _p5._1._0),
+									A2(_brainrape$empire$Main$update_branches, _p9, _p7._1._0),
 									model.projects)
 							}),
-						_1: A2(_brainrape$empire$Main$get_mrs, _p7, model.token)
+						_1: A2(_brainrape$empire$Main$get_mrs, _p9, model.token)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'MRsResponse':
-				if (_p5._1.ctor === 'Ok') {
-					var _p8 = _p5._0;
+				if (_p7._1.ctor === 'Ok') {
+					var _p10 = _p7._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11048,16 +11064,16 @@ var _brainrape$empire$Main$update = F2(
 							{
 								projects: A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Main$update_mrs, _p8, _p5._1._0),
+									A2(_brainrape$empire$Main$update_mrs, _p10, _p7._1._0),
 									model.projects)
 							}),
-						_1: A2(_brainrape$empire$Main$get_pipelines, _p8, model.token)
+						_1: A2(_brainrape$empire$Main$get_pipelines, _p10, model.token)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'PipelinesResponse':
-				if (_p5._1.ctor === 'Ok') {
+				if (_p7._1.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11065,7 +11081,7 @@ var _brainrape$empire$Main$update = F2(
 							{
 								projects: A2(
 									_elm_lang$core$List$map,
-									A2(_brainrape$empire$Main$update_pipelines, _p5._0, _p5._1._0),
+									A2(_brainrape$empire$Main$update_pipelines, _p7._0, _p7._1._0),
 									model.projects)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
@@ -11086,7 +11102,7 @@ var _brainrape$empire$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{token: _p5._0}),
+						{token: _p7._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -11096,7 +11112,7 @@ var _brainrape$empire$Main$main = _elm_lang$html$Html$program(
 		init: _brainrape$empire$Main$init,
 		update: _brainrape$empire$Main$update,
 		view: _brainrape$empire$Empire_View$view,
-		subscriptions: function (_p9) {
+		subscriptions: function (_p11) {
 			return A2(_elm_lang$core$Time$every, 60 * _elm_lang$core$Time$second, _brainrape$empire$Empire_Model$Tick);
 		}
 	})();

@@ -12,17 +12,15 @@ import Empire.Model exposing (Msg(..), Model, Token, Project, Branch, Pipeline, 
 import Empire.View exposing (view)
 
 
-status_map : String -> Status
-status_map str =
-  if str == "success" then Pass
-  else if str == "running" then Running
-  else Warn
+status_map str = case str of
+  "success" -> Pass
+  "running" -> Running
+  _ -> Warn
 
-mr_status_map : String -> Status
-mr_status_map str =
-  if str == "can_be_merged" then Pass
-  else if str == "unchecked" then Running
-  else Warn
+mr_status_map str = case str of
+  "can_be_merged" -> Pass
+  "unchecked" -> Running
+  _ -> Warn
 
 get : String -> (Result Http.Error a -> Msg) -> Decoder a -> Token -> Cmd Msg
 get path constructor decoder token =
@@ -131,9 +129,12 @@ update msg model = case msg of
 init : (Model, Cmd Msg)
 init = ( { projects = []
          , error = Nothing
-         , config_visible = True
-         , token = "" }
-       , Cmd.none )
+         , config_visible = False
+         , token = "MqMXeyHUruq-uMXH5cCp" }
+       , get_projects "MqMXeyHUruq-uMXH5cCp" )
+       --  , config_visible = True
+       --  , token = "" }
+       --, Cmd.none )
 
 main = program
   { init = init
