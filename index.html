@@ -10824,25 +10824,19 @@ var _brainrape$empire$Main$update_project = F2(
 					{ctor: '[]'})
 			});
 	});
-var _brainrape$empire$Main$mk_url = F2(
-	function (path, token) {
-		return A2(
+var _brainrape$empire$Main$get = F4(
+	function (path, constructor, decoder, token) {
+		var url = A2(
 			_elm_lang$core$Basics_ops['++'],
 			'https://gitlab.com/api/v3',
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				path,
 				A2(_elm_lang$core$Basics_ops['++'], 'private_token=', token)));
-	});
-var _brainrape$empire$Main$get = F4(
-	function (fragment, constructor, decoder, token) {
 		return A2(
 			_elm_lang$http$Http$send,
 			constructor,
-			A2(
-				_elm_lang$http$Http$get,
-				A2(_brainrape$empire$Main$mk_url, fragment, token),
-				decoder));
+			A2(_elm_lang$http$Http$get, url, decoder));
 	});
 var _brainrape$empire$Main$get_branches = function (project_id) {
 	return A3(

@@ -24,13 +24,10 @@ mr_status_map str =
   else if str == "unchecked" then Running
   else Warn
 
-
-mk_url : String -> Token -> String
-mk_url path token = "https://gitlab.com/api/v3" ++ path ++ "private_token=" ++ token
-
 get : String -> (Result Http.Error a -> Msg) -> Decoder a -> Token -> Cmd Msg
-get fragment constructor decoder token =
-  Http.send constructor (Http.get (mk_url fragment token) decoder)
+get path constructor decoder token =
+  let url = "https://gitlab.com/api/v3" ++ path ++ "private_token=" ++ token
+  in Http.send constructor (Http.get url decoder)
 
 get_pipelines : Int -> Token -> Cmd Msg
 get_pipelines project_id = get
