@@ -24,6 +24,7 @@ type alias Project =
   , org : String
   , name : String
   , description : String
+  , avatar_url : String
   , open_issues_count : Int
   , pipeline_id : Int
   , status: Maybe Status

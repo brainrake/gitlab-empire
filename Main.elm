@@ -5,7 +5,7 @@ import Maybe.Extra exposing ((?))
 import Http
 import Platform.Cmd
 import Json.Decode as J
-import Json.Decode.Extra as JsonExtra
+import Json.Decode.Extra as JE exposing ((|:))
 import Time exposing (every, second)
 
 import Empire.Model exposing (Msg(..), Model, Project, Branch, MR, Status(..))
@@ -57,15 +57,18 @@ d_branches = J.list <| J.map6 Branch
 get_projects token = Http.send ProjectsResponse <|
   Http.get (mk_url "/projects?" token) d_projects
 
-d_projects = J.list <| J.map8 Project
-  (J.field "id" J.int)
-  (J.at [ "namespace", "name" ] J.string)
-  (J.field "name" J.string)
-  (J.field "description" J.string)
-  (J.field "open_issues_count" J.int)
-  (J.succeed 0)
-  (J.succeed Nothing)
-  (J.succeed [])
+
+d_projects = J.list <| J.succeed Project
+  |: (J.field "id" J.int)
+  |: (J.at [ "namespace", "name" ] J.string)
+  |: (J.field "name" J.string)
+  |: (J.field "description" J.string)
+  |: (J.field "avatar_url" J.string |> JE.withDefault "")
+  |: (J.field "open_issues_count" J.int)
+  |: (J.succeed 0)
+  |: (J.succeed Nothing)
+  |: (J.succeed [])
+
 
 update_project projects project =
   let mp = projects |> filter (.id >> ((==) project.id)) |> head
@@ -127,7 +130,7 @@ init = ( { projects = []
          , error = Nothing
          , config_visible = True
          , token = "" }
-       , Cmd.none)
+       , Cmd.none )
 
 main = program
   { init = init

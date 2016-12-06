@@ -3,8 +3,8 @@ module Empire.View exposing (view)
 import List exposing (map)
 import Maybe
 import Maybe.Extra exposing((?))
-import Html exposing (Html, Attribute, node, text, a, div, span, table, tr, td, button, input, form)
-import Html.Attributes exposing (attribute, style, href, class, placeholder, type_, target, name)
+import Html exposing (Html, Attribute, node, text, a, div, span, table, tr, td, button, input, form, img)
+import Html.Attributes exposing (attribute, style, href, class, placeholder, type_, target, name, src)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Svg exposing (svg, circle)
 import Svg.Attributes exposing (width, height, cx, cy, r, fill)
@@ -39,25 +39,32 @@ view_status org project pipeline_id m_status =
 
 view_mr : String -> String -> MR -> List (Html Msg)
 view_mr org project { id, title, pipeline_id, status } =
-  [ view_status org project pipeline_id status
+  [ span [ style [ ("display", "inline-block"), ("width", "40px") ] ] []
+  , span [ class "octicon octicon-git-pull-request"] []
+  , view_status org project pipeline_id status
   , text " "
   , a [ href (mr_url org project id)] [ text ("!" ++ toString id ++ " " ++ title) ] ]
 
 view_branch : String -> String -> Branch -> Html Msg
 view_branch org project { name, plus, minus, pipeline_id, status, mr } = tr []
-  [ span [ class "octicon octicon-git-branch"] []
+  [ span [ style [ ("display", "inline-block"), ("width", "20px") ] ] []
+  , span [ class "octicon octicon-git-branch"] []
   , span [ style [("color", "green")] ]
          [ text <| "" ] -- <| "+" ++ toString plus ]
   , span [ style [("color", "red")]]
          [ text <| if minus == 0 then "" else "-" ++ toString minus ]
   , span [] [ view_status org project pipeline_id status ]
   , span [] [ a [ href (branch_url org project name) ] [ text name ] ]
-  , span [] (Maybe.map (view_mr org project) mr ? []) ]
+  , div [] (Maybe.map (view_mr org project) mr ? []) ]
 
 view_project : Project -> List (Html Msg)
-view_project { org, name, open_issues_count, branches, pipeline_id, status } =
+view_project { org, name, avatar_url, open_issues_count, branches, pipeline_id, status } =
   [ row [ column [ ExtraSmall Six ]
-          [ view_status org name pipeline_id status
+          [ if String.isEmpty avatar_url
+            then span [ class "octicon octicon-repo"] []
+            else img [ src avatar_url, width "16px"] []
+          , text " "
+          , view_status org name pipeline_id status
           , a [ href (project_url org name) ] [ text name ] ]
         , column [ ExtraSmall Six ]
           [ a [ href (project_url org name ++ "/issues") ]
