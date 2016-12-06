@@ -1,4 +1,6 @@
-import List exposing (map, filter, head)
+import List exposing (map, filter, head, foldr)
+import Dict exposing (Dict, empty, insert, values)
+import Dict.Extra exposing (fromListBy)
 import Html exposing (program)
 import Maybe exposing (andThen)
 import Maybe.Extra exposing ((?))
@@ -32,13 +34,13 @@ get_pipelines project_id = get
   ("/projects/" ++ toString project_id ++ "/pipelines?")
   (PipelinesResponse project_id)
   (list <| succeed Pipeline
-      |: field "id" int
-      |: (field "status" string |> J.map status_map)
-      |: field "ref" string )
+    |: field "id" int
+    |: (field "status" string |> J.map status_map)
+    |: field "ref" string )
 
 get_mrs : Int -> Token -> Cmd Msg
 get_mrs project_id = get
-  ("/projects/" ++ (toString project_id) ++ "/merge_requests?state=opened&")
+  ("/projects/" ++ toString project_id ++ "/merge_requests?state=opened&")
   (MRsResponse project_id)
   (list <| succeed MR
     |: field "iid" int
@@ -50,7 +52,7 @@ get_branches : Int -> Token -> Cmd Msg
 get_branches project_id = get
   ("/projects/" ++ toString project_id ++ "/repository/branches?")
   (BranchesResponse project_id)
-  (list <| succeed Branch
+  (J.map (fromListBy .name) <| list <| succeed Branch
     |: field "name" string
     |: succeed 0
     |: succeed 0
@@ -59,7 +61,7 @@ get_branches project_id = get
 
 get_projects : Token ->  Cmd Msg
 get_projects = get "/projects?" ProjectsResponse
-  (list <| succeed Project
+  (J.map (fromListBy .id) <| list <| succeed Project
     |: field "id" int
     |: at [ "namespace", "name" ] string
     |: field "name" string
@@ -67,74 +69,66 @@ get_projects = get "/projects?" ProjectsResponse
     |: field "description" string
     |: (field "avatar_url" string |> JE.withDefault "")
     |: field "open_issues_count" int
-    |: succeed [])
+    |: succeed empty)
 
 
-update_project : List Project -> Project -> Project
-update_project projects project =
-  { project | branches = (projects |> filter (.id >> ((==) project.id))
-                                   |> map .branches |> head) ? []}
+update_project : Dict Int Project -> Int -> Project -> Project
+update_project projects id project =
+  { project | branches = (Dict.get id projects |> Maybe.map .branches) ? empty }
 
-update_branches : Int -> List Branch -> Project -> Project
-update_branches project_id branches project =
-  if project.id == project_id
-  then { project | branches = branches |> map (\ b ->
-    let mb = project.branches |> filter (.name >> ((==) b.name)) |> head
-    in { b | mr = mb |> andThen .mr
-           , pipeline = mb |> andThen .pipeline })}
-  else project
+update_branches : Int -> Dict String Branch -> Int -> Project -> Project
+update_branches project_id branches id project =
+  if project.id /= project_id then project
+    else { project | branches = branches |> Dict.map (\name branch ->
+      let get_old = Dict.get name project.branches |> flip andThen
+      in { branch | mr = get_old .mr
+                  , pipeline = get_old .pipeline })}
 
-update_mrs : Int -> List MR -> Project -> Project
-update_mrs project_id mrs project =
-  if project.id == project_id
-  then { project | branches = project.branches |> map (\b ->
-    { b | mr = mrs |> filter (.source_branch >> ((==) b.name)) |> head }) }
-  else project
+update_mrs : List MR -> Int -> Project -> Project
+update_mrs mrs id project =
+  if project.id /= id then project
+    else { project | branches = project.branches |> Dict.map (\name branch ->
+      { branch | mr = mrs |> filter (.source_branch >> ((==) name)) |> head } ) }
 
-update_pipelines : Int -> List Pipeline -> Project -> Project
-update_pipelines project_id pipelines project =
-  if project.id /= project_id then project else { project
-    | branches = project.branches |> map (\b ->
-      { b | pipeline = pipelines |> filter (.ref >> ((==) b.name)) |> head } ) }
+update_pipelines : List Pipeline -> Int -> Project -> Project
+update_pipelines pipelines id project =
+  if project.id /= id then project
+    else { project | branches = project.branches |> Dict.map (\name branch ->
+      { branch | pipeline = pipelines |> filter (.ref >> ((==) name)) |> head } ) }
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
   Tick t -> ( model, if model.config_visible || String.isEmpty model.token
                      then Cmd.none
                      else get_projects model.token)
-  ProjectsResponse (Ok projects) ->
-    ( { model | projects = map (update_project model.projects) projects
-              , error = Nothing }
-    , projects |> map (\p -> get_branches p.id model.token) |> Cmd.batch )
-  ProjectsResponse (Err err) ->
-    ( { model | error = Just <| toString err }
-    , Cmd.none)
-  BranchesResponse project_id (Ok branches) ->
-    ( { model | projects = map (update_branches project_id branches) model.projects}
-    , get_mrs project_id model.token )
-  BranchesResponse project_id (Err err) -> (model, Cmd.none)
-  MRsResponse project_id (Ok mrs) ->
-    ( { model | projects = map (update_mrs project_id mrs) model.projects }
-    , get_pipelines project_id model.token)
-  MRsResponse project_id (Err err) -> (model, Cmd.none)
-  PipelinesResponse project_id (Ok pipelines) ->
-    ( { model | projects = map (update_pipelines project_id pipelines) model.projects }
-    , Cmd.none)
-  PipelinesResponse project_id (Err err) -> (model, Cmd.none)
   ToggleConfig ->
     ( { model | config_visible = not model.config_visible }
     , if model.config_visible then get_projects model.token else Cmd.none)
   ChangeToken token -> ({ model | token = token }, Cmd.none)
+  ProjectsResponse (Err err) ->
+    ( { model | error = Just <| toString err }
+    , Cmd.none)
+  ProjectsResponse (Ok projects) ->
+    ( { model | projects = Dict.map (update_project model.projects) projects
+              , error = Nothing }
+    , projects |> values |> map (\p -> get_branches p.id model.token) |> Cmd.batch )
+  BranchesResponse project_id (Ok branches) ->
+    ( { model | projects = Dict.map (update_branches project_id branches) model.projects}
+    , get_mrs project_id model.token )
+  MRsResponse project_id (Ok mrs) ->
+    ( { model | projects = Dict.map (update_mrs mrs) model.projects }
+    , get_pipelines project_id model.token)
+  PipelinesResponse project_id (Ok pipelines) ->
+    ( { model | projects = Dict.map (update_pipelines pipelines) model.projects }
+    , Cmd.none)
+  _ -> (model, Cmd.none)
 
 init : (Model, Cmd Msg)
-init = ( { projects = []
+init = ( { projects = empty
          , error = Nothing
-         , config_visible = False
-         , token = "MqMXeyHUruq-uMXH5cCp" }
-       , get_projects "MqMXeyHUruq-uMXH5cCp" )
-       --  , config_visible = True
-       --  , token = "" }
-       --, Cmd.none )
+         , config_visible = True
+         , token = "" }
+       , Cmd.none )
 
 main = program
   { init = init

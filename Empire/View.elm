@@ -1,8 +1,9 @@
 module Empire.View exposing (view)
 
 import List exposing (map, filter)
-import Maybe
+import Maybe exposing (andThen)
 import Maybe.Extra exposing((?))
+import Dict exposing (get, values, empty)
 import Html exposing (Html, Attribute, node, text, a, div, span, table, tr, td, button, input, form, img)
 import Html.Attributes exposing (attribute, style, href, class, placeholder, type_, target, name, src)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -37,11 +38,11 @@ view_pipeline org project pipeline =
                    , fill <| (pipeline |> Maybe.map (.status >> status_color)) ? "lightgrey" ] [] ]
     , span [] [ text " " ] ]
 
-view_mr : String -> String -> MR -> List (Html Msg)
-view_mr org project { id, title, status} =
+view_mr : String -> String -> Maybe Pipeline -> MR -> List (Html Msg)
+view_mr org project pipeline { id, title, status} =
   [ span [ style [ ("display", "inline-block"), ("width", "40px") ] ] []
   , span [ class "octicon octicon-git-pull-request"] []
-  -- , view_pipeline org project pipeline_id status
+  , view_pipeline org project pipeline
   , text " "
   , a [ href (mr_url org project id)] [ text ("!" ++ toString id ++ " " ++ title) ] ]
 
@@ -55,23 +56,23 @@ view_branch org project { name, plus, minus, pipeline, mr } = tr []
          [ text <| if minus == 0 then "" else "-" ++ toString minus ]
   , span [] [ view_pipeline org project pipeline ]
   , span [] [ a [ href (branch_url org project name) ] [ text name ] ]
-  , div [] (Maybe.map (view_mr org project) mr ? []) ]
+  , div [] (Maybe.map (view_mr org project pipeline) mr ? []) ]
 
-view_project : Project -> List (Html Msg)
-view_project { org, name, path, avatar_url, open_issues_count, branches } =
+view_project : Project -> Html Msg
+view_project { org, name, path, avatar_url, open_issues_count, branches } = div []
   [ row [ column [ ExtraSmall Six ]
           [ if String.isEmpty avatar_url
             then span [ class "octicon octicon-repo"] []
             else img [ src avatar_url, width "16px"] []
           , text " "
-          --, view_status org name pipeline_id status
+          , view_pipeline org name (get "master" branches |> andThen .pipeline)
           , a [ href (project_url org path) ] [ text name ] ]
         , column [ ExtraSmall Six ]
           [ a [ href (project_url org path ++ "/issues") ]
               [ text (toString open_issues_count ++ " issues") ] ] ]
   , row [ column [ ExtraSmall Twelve ]
-          [ div [] (branches |> filter (.name >> ((/=) "master") )
-                             |> map (view_branch org name)) ] ] ]
+          [ div [] (branches |> values |> filter (.name >> ((/=) "master") )
+                                       |> map (view_branch org name)) ] ] ]
 
 view_config : Bool -> String -> Html Msg
 view_config config_visible token = div []
@@ -98,5 +99,5 @@ stylesheet url = node "link" [ attribute "rel" "stylesheet", attribute "href" ur
 view : Model -> Html Msg
 view { projects, error, config_visible, token } = div [] <| map stylesheet css_urls ++
   [ view_config config_visible token
-  , containerFluid (List.concatMap view_project projects)
+  , containerFluid <| map view_project <| values projects
   , div [] [ text <| Maybe.map ((++) "Error: ") error ? "" ] ]

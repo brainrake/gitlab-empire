@@ -1,20 +1,21 @@
 module Empire.Model exposing (Msg(..), Model, Token, Project, Branch, Pipeline, MR, Status(..), status_color)
 
 import Http
+import Dict exposing (Dict)
 import Time exposing (Time)
 
 type Msg = Tick Time
-         | ProjectsResponse (Result Http.Error (List Project))
-         | BranchesResponse Int (Result Http.Error (List Branch))
-         | MRsResponse Int (Result Http.Error (List MR))
-         | PipelinesResponse Int (Result Http.Error (List Pipeline))
          | ToggleConfig
          | ChangeToken String
+         | ProjectsResponse (Result Http.Error (Dict Int Project))
+         | BranchesResponse Int (Result Http.Error (Dict String Branch))
+         | MRsResponse Int (Result Http.Error (List MR))
+         | PipelinesResponse Int (Result Http.Error (List Pipeline))
 
 type alias Token = String
 
 type alias Model =
-  { projects : List Project
+  { projects : Dict Int Project
   , error : Maybe String
   , config_visible : Bool
   , token : String }
@@ -27,7 +28,7 @@ type alias Project =
   , description : String
   , avatar_url : String
   , open_issues_count : Int
-  , branches : List Branch }
+  , branches : Dict String Branch }
 
 type alias Branch =
   { name : String
