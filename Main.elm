@@ -17,6 +17,7 @@ import Empire.View exposing (view)
 status_map str = case str of
   "success" -> Pass
   "running" -> Running
+  "failed" -> Fail
   _ -> Warn
 
 mr_status_map str = case str of
