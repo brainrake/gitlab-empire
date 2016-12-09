@@ -4,13 +4,16 @@ import Http
 import Dict exposing (Dict)
 import Time exposing (Time)
 
-type Msg = Tick Time
-         | ToggleConfig
-         | ChangeToken String
-         | ProjectsResponse (Result Http.Error (Dict Int Project))
-         | BranchesResponse Int (Result Http.Error (Dict String Branch))
-         | MRsResponse Int (Result Http.Error (List MR))
-         | PipelinesResponse Int (Result Http.Error (List Pipeline))
+
+type Msg
+    = Tick Time
+    | ToggleConfig
+    | ChangeToken String
+    | ProjectsResponse (Result Http.Error (Dict Int Project))
+    | BranchesResponse Int (Result Http.Error (Dict String Branch))
+    | MRsResponse Int (Result Http.Error (List MR))
+    | PipelinesResponse Int (Result Http.Error (List Pipeline))
+
 
 type alias Token = String
 
@@ -48,8 +51,8 @@ type alias MR =
   , source_branch : String
   , status : Maybe Status }
 
-type Status = Warn | Running | Fail | Pass
 
+type Status = Warn | Running | Fail | Pass
 
 status_color : Status -> String
 status_color status = case status of

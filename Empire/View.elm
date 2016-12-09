@@ -1,11 +1,11 @@
 module Empire.View exposing (view)
 
-import List exposing (map, filter)
+import List exposing (map, filter, sortBy)
 import Maybe exposing (andThen)
 import Maybe.Extra exposing((?))
 import Dict exposing (get, values, empty)
 import Html exposing (Html, Attribute, node, text, a, div, span, table, tr, td, button, input, form, img)
-import Html.Attributes exposing (attribute, style, href, class, placeholder, type_, target, name, src)
+import Html.Attributes exposing (attribute, style, href, class, placeholder, type_, target, name, src, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Svg exposing (svg, circle)
 import Svg.Attributes exposing (width, height, cx, cy, r, fill)
@@ -71,24 +71,25 @@ view_project { org, name, path, avatar_url, open_issues_count, branches } = div 
           [ a [ href (project_url org path ++ "/issues") ]
               [ text (toString open_issues_count ++ " issues") ] ] ]
   , row [ column [ ExtraSmall Twelve ]
-          [ div [] (branches |> values |> filter (.name >> ((/=) "master") )
-                                       |> map (view_branch org name)) ] ] ]
+          [ div [] (branches |> values |> filter (.name >> (/=) "master")
+                             |> sortBy .name |> map (view_branch org name)) ] ] ]
 
 view_config : Bool -> String -> Html Msg
-view_config config_visible token = div []
-  [ button [ class "btn", onClick ToggleConfig
-           , style [ ("display", if not config_visible then "block" else "none")
-                   , ("position", "absolute"), ("right", "0"), ("z-index", "1")] ]
-           [ text "⚙" ]
-  , well WellLarge [ style [ ("display", if config_visible then "block" else "none") ] ]
+view_config config_visible token =
+  if not config_visible then button
+    [ class "btn", onClick ToggleConfig
+    , style [ ("display", if not config_visible then "block" else "none")
+            , ("position", "absolute"), ("right", "0"), ("z-index", "1") ] ]
+    [ text "⚙" ]
+  else well WellLarge []
     [ form [ onSubmit ToggleConfig ]
-      [ input [ onInput ChangeToken, name "github_private_token"
+      [ input [ onInput ChangeToken, value token, name "github_private_token"
               , class "form_control", placeholder "private token" ] []
       , button [ type_ "submit", class "btn"] [ text "OK" ]
       , div [] [ text "I need a private token to access the GitLab API. "
                , a [ href "https://gitlab.com/profile/personal_access_tokens"
                    , target "_blank"]
-                   [ text "Get one here." ] ] ] ] ]
+                   [ text "Get one here." ] ] ] ]
 
 css_urls =
   [ "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -99,5 +100,5 @@ stylesheet url = node "link" [ attribute "rel" "stylesheet", attribute "href" ur
 view : Model -> Html Msg
 view { projects, error, config_visible, token } = div [] <| map stylesheet css_urls ++
   [ view_config config_visible token
-  , containerFluid <| map view_project <| values projects
+  , containerFluid (projects |> values |> sortBy .name |> map view_project)
   , div [] [ text <| Maybe.map ((++) "Error: ") error ? "" ] ]

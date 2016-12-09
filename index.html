@@ -9738,157 +9738,137 @@ var _brainrape$empire$Empire_View$css_urls = {
 };
 var _brainrape$empire$Empire_View$view_config = F2(
 	function (config_visible, token) {
-		return A2(
-			_elm_lang$html$Html$div,
+		return (!config_visible) ? A2(
+			_elm_lang$html$Html$button,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('btn'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_brainrape$empire$Empire_Model$ToggleConfig),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'display',
+									_1: (!config_visible) ? 'block' : 'none'
+								},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'right', _1: '0'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'z-index', _1: '1'},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('⚙'),
+				_1: {ctor: '[]'}
+			}) : A3(
+			_JeremyBellows$elm_bootstrapify$Bootstrap_Wells$well,
+			_JeremyBellows$elm_bootstrapify$Bootstrap_Wells$WellLarge,
 			{ctor: '[]'},
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$button,
+					_elm_lang$html$Html$form,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('btn'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_brainrape$empire$Empire_Model$ToggleConfig),
-							_1: {
+						_0: _elm_lang$html$Html_Events$onSubmit(_brainrape$empire$Empire_Model$ToggleConfig),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$style(
-									{
+								_0: _elm_lang$html$Html_Events$onInput(_brainrape$empire$Empire_Model$ChangeToken),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(token),
+									_1: {
 										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'display',
-											_1: (!config_visible) ? 'block' : 'none'
-										},
+										_0: _elm_lang$html$Html_Attributes$name('github_private_token'),
 										_1: {
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+											_0: _elm_lang$html$Html_Attributes$class('form_control'),
 											_1: {
 												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'right', _1: '0'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'z-index', _1: '1'},
-													_1: {ctor: '[]'}
-												}
+												_0: _elm_lang$html$Html_Attributes$placeholder('private token'),
+												_1: {ctor: '[]'}
 											}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$type_('submit'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('btn'),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('OK'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('I need a private token to access the GitLab API. '),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$a,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$href('https://gitlab.com/profile/personal_access_tokens'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$target('_blank'),
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Get one here.'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
 										}
 									}),
 								_1: {ctor: '[]'}
 							}
 						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('⚙'),
-						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: A3(
-						_JeremyBellows$elm_bootstrapify$Bootstrap_Wells$well,
-						_JeremyBellows$elm_bootstrapify$Bootstrap_Wells$WellLarge,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'display',
-										_1: config_visible ? 'block' : 'none'
-									},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$form,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onSubmit(_brainrape$empire$Empire_Model$ToggleConfig),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onInput(_brainrape$empire$Empire_Model$ChangeToken),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$name('github_private_token'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('form_control'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$placeholder('private token'),
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$button,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$type_('submit'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('btn'),
-													_1: {ctor: '[]'}
-												}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('OK'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$div,
-												{ctor: '[]'},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('I need a private token to access the GitLab API. '),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$a,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$href('https://gitlab.com/profile/personal_access_tokens'),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$target('_blank'),
-																	_1: {ctor: '[]'}
-																}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Get one here.'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			});
 	});
 var _brainrape$empire$Empire_View$org_url = function (org) {
@@ -10351,19 +10331,24 @@ var _brainrape$empire$Empire_View$view_project = function (_p10) {
 										_elm_lang$core$List$map,
 										A2(_brainrape$empire$Empire_View$view_branch, _p16, _p15),
 										A2(
-											_elm_lang$core$List$filter,
-											function (_p12) {
-												return A2(
-													F2(
-														function (x, y) {
-															return !_elm_lang$core$Native_Utils.eq(x, y);
-														}),
-													'master',
-													function (_) {
-														return _.name;
-													}(_p12));
+											_elm_lang$core$List$sortBy,
+											function (_) {
+												return _.name;
 											},
-											_elm_lang$core$Dict$values(_p14)))),
+											A2(
+												_elm_lang$core$List$filter,
+												function (_p12) {
+													return A2(
+														F2(
+															function (x, y) {
+																return !_elm_lang$core$Native_Utils.eq(x, y);
+															}),
+														'master',
+														function (_) {
+															return _.name;
+														}(_p12));
+												},
+												_elm_lang$core$Dict$values(_p14))))),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -10389,7 +10374,12 @@ var _brainrape$empire$Empire_View$view = function (_p18) {
 						A2(
 							_elm_lang$core$List$map,
 							_brainrape$empire$Empire_View$view_project,
-							_elm_lang$core$Dict$values(_p19.projects))),
+							A2(
+								_elm_lang$core$List$sortBy,
+								function (_) {
+									return _.name;
+								},
+								_elm_lang$core$Dict$values(_p19.projects)))),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -10909,7 +10899,7 @@ var _brainrape$empire$Main$update_project = F3(
 					_elm_lang$core$Dict$empty)
 			});
 	});
-var _brainrape$empire$Main$get = F4(
+var _brainrape$empire$Main$request = F4(
 	function (path, constructor, decoder, token) {
 		var url = A2(
 			_elm_lang$core$Basics_ops['++'],
@@ -10923,43 +10913,8 @@ var _brainrape$empire$Main$get = F4(
 			constructor,
 			A2(_elm_lang$http$Http$get, url, decoder));
 	});
-var _brainrape$empire$Main$get_branches = function (project_id) {
-	return A3(
-		_brainrape$empire$Main$get,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/projects/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(project_id),
-				'/repository/branches?')),
-		_brainrape$empire$Empire_Model$BranchesResponse(project_id),
-		A2(
-			_elm_lang$core$Json_Decode$map,
-			_elm_community$dict_extra$Dict_Extra$fromListBy(
-				function (_) {
-					return _.name;
-				}),
-			_elm_lang$core$Json_Decode$list(
-				A2(
-					_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
-					A2(
-						_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
-						A2(
-							_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
-							A2(
-								_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
-								A2(
-									_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
-									_elm_lang$core$Json_Decode$succeed(_brainrape$empire$Empire_Model$Branch),
-									A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
-								_elm_lang$core$Json_Decode$succeed(0)),
-							_elm_lang$core$Json_Decode$succeed(0)),
-						_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)),
-					_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)))));
-};
 var _brainrape$empire$Main$get_projects = A3(
-	_brainrape$empire$Main$get,
+	_brainrape$empire$Main$request,
 	'/projects?',
 	_brainrape$empire$Empire_Model$ProjectsResponse,
 	A2(
@@ -11008,6 +10963,41 @@ var _brainrape$empire$Main$get_projects = A3(
 							A2(_elm_lang$core$Json_Decode$field, 'avatar_url', _elm_lang$core$Json_Decode$string))),
 					A2(_elm_lang$core$Json_Decode$field, 'open_issues_count', _elm_lang$core$Json_Decode$int)),
 				_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Dict$empty)))));
+var _brainrape$empire$Main$get_branches = function (project_id) {
+	return A3(
+		_brainrape$empire$Main$request,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/projects/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(project_id),
+				'/repository/branches?')),
+		_brainrape$empire$Empire_Model$BranchesResponse(project_id),
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			_elm_community$dict_extra$Dict_Extra$fromListBy(
+				function (_) {
+					return _.name;
+				}),
+			_elm_lang$core$Json_Decode$list(
+				A2(
+					_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+					A2(
+						_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+						A2(
+							_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+							A2(
+								_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+								A2(
+									_elm_community$json_extra$Json_Decode_Extra_ops['|:'],
+									_elm_lang$core$Json_Decode$succeed(_brainrape$empire$Empire_Model$Branch),
+									A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
+								_elm_lang$core$Json_Decode$succeed(0)),
+							_elm_lang$core$Json_Decode$succeed(0)),
+						_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)),
+					_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing)))));
+};
 var _brainrape$empire$Main$mr_status_map = function (str) {
 	var _p2 = str;
 	switch (_p2) {
@@ -11021,7 +11011,7 @@ var _brainrape$empire$Main$mr_status_map = function (str) {
 };
 var _brainrape$empire$Main$get_mrs = function (project_id) {
 	return A3(
-		_brainrape$empire$Main$get,
+		_brainrape$empire$Main$request,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			'/projects/',
@@ -11064,7 +11054,7 @@ var _brainrape$empire$Main$status_map = function (str) {
 };
 var _brainrape$empire$Main$get_pipelines = function (project_id) {
 	return A3(
-		_brainrape$empire$Main$get,
+		_brainrape$empire$Main$request,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			'/projects/',
@@ -11187,16 +11177,15 @@ var _brainrape$empire$Main$update = F2(
 					}
 				default:
 					if (_p5._1.ctor === 'Ok') {
+						var projects = A2(
+							_elm_lang$core$Dict$map,
+							A2(_brainrape$empire$Main$update_pipelines, _p5._0, _p5._1._0),
+							model.projects);
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
-								{
-									projects: A2(
-										_elm_lang$core$Dict$map,
-										A2(_brainrape$empire$Main$update_pipelines, _p5._0, _p5._1._0),
-										model.projects)
-								}),
+								{projects: projects}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					} else {

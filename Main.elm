@@ -1,5 +1,5 @@
 import List exposing (map, filter, head, foldr)
-import Dict exposing (Dict, empty, insert, values)
+import Dict exposing (Dict, empty, insert, values, get)
 import Dict.Extra exposing (fromListBy)
 import Html exposing (program)
 import Maybe exposing (andThen)
@@ -24,43 +24,14 @@ mr_status_map str = case str of
   "unchecked" -> Running
   _ -> Warn
 
-get : String -> (Result Http.Error a -> Msg) -> Decoder a -> Token -> Cmd Msg
-get path constructor decoder token =
+
+request : String -> (Result Http.Error a -> Msg) -> Decoder a -> Token -> Cmd Msg
+request path constructor decoder token =
   let url = "https://gitlab.com/api/v3" ++ path ++ "private_token=" ++ token
   in Http.send constructor (Http.get url decoder)
 
-get_pipelines : Int -> Token -> Cmd Msg
-get_pipelines project_id = get
-  ("/projects/" ++ toString project_id ++ "/pipelines?")
-  (PipelinesResponse project_id)
-  (list <| succeed Pipeline
-    |: field "id" int
-    |: (field "status" string |> J.map status_map)
-    |: field "ref" string )
-
-get_mrs : Int -> Token -> Cmd Msg
-get_mrs project_id = get
-  ("/projects/" ++ toString project_id ++ "/merge_requests?state=opened&")
-  (MRsResponse project_id)
-  (list <| succeed MR
-    |: field "iid" int
-    |: field "title" string
-    |: field "source_branch" string
-    |: (field "merge_status" string |> J.map (mr_status_map >> Just) ))
-
-get_branches : Int -> Token -> Cmd Msg
-get_branches project_id = get
-  ("/projects/" ++ toString project_id ++ "/repository/branches?")
-  (BranchesResponse project_id)
-  (J.map (fromListBy .name) <| list <| succeed Branch
-    |: field "name" string
-    |: succeed 0
-    |: succeed 0
-    |: succeed Nothing
-    |: succeed Nothing)
-
 get_projects : Token ->  Cmd Msg
-get_projects = get "/projects?" ProjectsResponse
+get_projects = request "/projects?" ProjectsResponse
   (J.map (fromListBy .id) <| list <| succeed Project
     |: field "id" int
     |: at [ "namespace", "name" ] string
@@ -70,6 +41,36 @@ get_projects = get "/projects?" ProjectsResponse
     |: (field "avatar_url" string |> JE.withDefault "")
     |: field "open_issues_count" int
     |: succeed empty)
+
+get_branches : Int -> Token -> Cmd Msg
+get_branches project_id = request
+  ("/projects/" ++ toString project_id ++ "/repository/branches?")
+  (BranchesResponse project_id)
+  (J.map (fromListBy .name) <| list <| succeed Branch
+    |: field "name" string
+    |: succeed 0
+    |: succeed 0
+    |: succeed Nothing
+    |: succeed Nothing)
+
+get_mrs : Int -> Token -> Cmd Msg
+get_mrs project_id = request
+  ("/projects/" ++ toString project_id ++ "/merge_requests?state=opened&")
+  (MRsResponse project_id)
+  (list <| succeed MR
+    |: field "iid" int
+    |: field "title" string
+    |: field "source_branch" string
+    |: (field "merge_status" string |> J.map (mr_status_map >> Just) ))
+
+get_pipelines : Int -> Token -> Cmd Msg
+get_pipelines project_id = request
+  ("/projects/" ++ toString project_id ++ "/pipelines?")
+  (PipelinesResponse project_id)
+  (list <| succeed Pipeline
+    |: field "id" int
+    |: (field "status" string |> J.map status_map)
+    |: field "ref" string )
 
 
 update_project : Dict Int Project -> Int -> Project -> Project
@@ -88,13 +89,14 @@ update_mrs : List MR -> Int -> Project -> Project
 update_mrs mrs id project =
   if project.id /= id then project
     else { project | branches = project.branches |> Dict.map (\name branch ->
-      { branch | mr = mrs |> filter (.source_branch >> ((==) name)) |> head } ) }
+      { branch | mr = mrs |> filter (.source_branch >> (==) name) |> head } ) }
 
 update_pipelines : Int -> List Pipeline -> Int -> Project -> Project
 update_pipelines project_id pipelines id project =
   if project.id /= project_id then project
     else { project | branches = project.branches |> Dict.map (\name branch ->
-      { branch | pipeline = pipelines |> filter (.ref >> ((==) name)) |> head } ) }
+      { branch | pipeline = pipelines |> filter (.ref >> (==) name) |> head } ) }
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -104,10 +106,10 @@ update msg model = case msg of
   ToggleConfig ->
     ( { model | config_visible = not model.config_visible }
     , if model.config_visible then get_projects model.token else Cmd.none)
-  ChangeToken token -> ({ model | token = token }, Cmd.none)
+  ChangeToken token ->
+    ( { model | token = token }, Cmd.none )
   ProjectsResponse (Err err) ->
-    ( { model | error = Just <| toString err }
-    , Cmd.none)
+    ( { model | error = Just <| toString err } , Cmd.none)
   ProjectsResponse (Ok projects) ->
     ( { model | projects = Dict.map (update_project model.projects) projects
               , error = Nothing }
@@ -119,9 +121,10 @@ update msg model = case msg of
     ( { model | projects = Dict.map (update_mrs mrs) model.projects }
     , get_pipelines project_id model.token)
   PipelinesResponse project_id (Ok pipelines) ->
-    ( { model | projects = Dict.map (update_pipelines project_id pipelines) model.projects }
-    , Cmd.none)
+    let projects = Dict.map (update_pipelines project_id pipelines) model.projects
+    in ( { model | projects = projects }, Cmd.none)
   _ -> (model, Cmd.none)
+
 
 init : (Model, Cmd Msg)
 init = ( { projects = empty
@@ -129,6 +132,7 @@ init = ( { projects = empty
          , config_visible = True
          , token = "" }
        , Cmd.none )
+
 
 main = program
   { init = init
