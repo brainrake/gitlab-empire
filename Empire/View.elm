@@ -4,7 +4,7 @@ import List exposing (map, filter, sortBy)
 import Maybe exposing (andThen)
 import Maybe.Extra exposing((?))
 import Dict exposing (get, values, empty)
-import Html exposing (Html, Attribute, node, text, a, div, span, table, tr, td, button, input, form, img)
+import Html exposing (Html, Attribute, node, text, a, b, div, span, table, tr, td, button, input, form, img)
 import Html.Attributes exposing (attribute, style, href, class, placeholder, type_, target, name, src, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Svg exposing (svg, circle)
@@ -60,16 +60,17 @@ view_branch org project { name, plus, minus, pipeline, mr } = tr []
 
 view_project : Project -> Html Msg
 view_project { org, name, path, avatar_url, open_issues_count, branches } = div []
-  [ row [ column [ ExtraSmall Six ]
+  [ row [ column [ ExtraSmall Twelve ]
           [ if String.isEmpty avatar_url
             then span [ class "octicon octicon-repo"] []
             else img [ src avatar_url, width "16px"] []
           , text " "
           , view_pipeline org name (get "master" branches |> andThen .pipeline)
-          , a [ href (project_url org path) ] [ text name ] ]
-        , column [ ExtraSmall Six ]
-          [ a [ href (project_url org path ++ "/issues") ]
-              [ text (toString open_issues_count ++ " issues") ] ] ]
+          , b [] [ a [ href (project_url org path) ] [ text name ] ]
+          , text " ("
+          , a [ href (project_url org path ++ "/issues") ]
+              [ text (toString open_issues_count ++ " issues") ]
+          , text ")" ] ]
   , row [ column [ ExtraSmall Twelve ]
           [ div [] (branches |> values |> filter (.name >> (/=) "master")
                              |> sortBy .name |> map (view_branch org name)) ] ] ]

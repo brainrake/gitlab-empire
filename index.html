@@ -10215,7 +10215,7 @@ var _brainrape$empire$Empire_View$view_project = function (_p10) {
 						_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$column,
 						{
 							ctor: '::',
-							_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$ExtraSmall(_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$Six),
+							_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$ExtraSmall(_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$Twelve),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -10257,58 +10257,62 @@ var _brainrape$empire$Empire_View$view_project = function (_p10) {
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$a,
+											_elm_lang$html$Html$b,
+											{ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$href(
-													A2(_brainrape$empire$Empire_View$project_url, _p16, _p17)),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p15),
+												_0: A2(
+													_elm_lang$html$Html$a,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$href(
+															A2(_brainrape$empire$Empire_View$project_url, _p16, _p17)),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text(_p15),
+														_1: {ctor: '[]'}
+													}),
 												_1: {ctor: '[]'}
 											}),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(' ('),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$a,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$href(
+															A2(
+																_elm_lang$core$Basics_ops['++'],
+																A2(_brainrape$empire$Empire_View$project_url, _p16, _p17),
+																'/issues')),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text(
+															A2(
+																_elm_lang$core$Basics_ops['++'],
+																_elm_lang$core$Basics$toString(_p11.open_issues_count),
+																' issues')),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(')'),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
 									}
 								}
 							}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$column,
-							{
-								ctor: '::',
-								_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$ExtraSmall(_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$Six),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$a,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$href(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												A2(_brainrape$empire$Empire_View$project_url, _p16, _p17),
-												'/issues')),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p11.open_issues_count),
-												' issues')),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}),
 			_1: {
 				ctor: '::',
