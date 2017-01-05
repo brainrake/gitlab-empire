@@ -10196,125 +10196,18 @@ var _brainrape$empire$Empire_View$view_branch = F3(
 				}
 			});
 	});
-var _brainrape$empire$Empire_View$view_project = function (_p10) {
-	var _p11 = _p10;
-	var _p17 = _p11.path;
-	var _p16 = _p11.org;
-	var _p15 = _p11.name;
-	var _p14 = _p11.branches;
-	var _p13 = _p11.avatar_url;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$row(
-				{
-					ctor: '::',
-					_0: A2(
-						_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$column,
-						{
-							ctor: '::',
-							_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$ExtraSmall(_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$Twelve),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$core$String$isEmpty(_p13) ? A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('octicon octicon-repo'),
-									_1: {ctor: '[]'}
-								},
-								{ctor: '[]'}) : A2(
-								_elm_lang$html$Html$img,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$src(_p13),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$width('16px'),
-										_1: {ctor: '[]'}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(' '),
-								_1: {
-									ctor: '::',
-									_0: A3(
-										_brainrape$empire$Empire_View$view_pipeline,
-										_p16,
-										_p15,
-										A2(
-											_elm_lang$core$Maybe$andThen,
-											function (_) {
-												return _.pipeline;
-											},
-											A2(_elm_lang$core$Dict$get, 'master', _p14))),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$b,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$a,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$href(
-															A2(_brainrape$empire$Empire_View$project_url, _p16, _p17)),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text(_p15),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(' ('),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$a,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$href(
-															A2(
-																_elm_lang$core$Basics_ops['++'],
-																A2(_brainrape$empire$Empire_View$project_url, _p16, _p17),
-																'/issues')),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text(
-															A2(
-																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p11.open_issues_count),
-																' issues')),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html$text(')'),
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
+var _brainrape$empire$Empire_View$view_project = F2(
+	function (token, _p10) {
+		var _p11 = _p10;
+		var _p17 = _p11.path;
+		var _p16 = _p11.org;
+		var _p15 = _p11.name;
+		var _p14 = _p11.branches;
+		var _p13 = _p11.avatar_url;
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
 				ctor: '::',
 				_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$row(
 					{
@@ -10328,41 +10221,154 @@ var _brainrape$empire$Empire_View$view_project = function (_p10) {
 							},
 							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
-									A2(
-										_elm_lang$core$List$map,
-										A2(_brainrape$empire$Empire_View$view_branch, _p16, _p15),
-										A2(
-											_elm_lang$core$List$sortBy,
-											function (_) {
-												return _.name;
-											},
+								_0: _elm_lang$core$String$isEmpty(_p13) ? A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('octicon octicon-repo'),
+										_1: {ctor: '[]'}
+									},
+									{ctor: '[]'}) : A2(
+									_elm_lang$html$Html$img,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$src(
 											A2(
-												_elm_lang$core$List$filter,
-												function (_p12) {
-													return A2(
-														F2(
-															function (x, y) {
-																return !_elm_lang$core$Native_Utils.eq(x, y);
-															}),
-														'master',
-														function (_) {
-															return _.name;
-														}(_p12));
+												_elm_lang$core$Basics_ops['++'],
+												_p13,
+												A2(_elm_lang$core$Basics_ops['++'], '?private_token=', token))),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$width('16px'),
+											_1: {ctor: '[]'}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(' '),
+									_1: {
+										ctor: '::',
+										_0: A3(
+											_brainrape$empire$Empire_View$view_pipeline,
+											_p16,
+											_p15,
+											A2(
+												_elm_lang$core$Maybe$andThen,
+												function (_) {
+													return _.pipeline;
 												},
-												_elm_lang$core$Dict$values(_p14))))),
-								_1: {ctor: '[]'}
+												A2(_elm_lang$core$Dict$get, 'master', _p14))),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$b,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$a,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$href(
+																A2(_brainrape$empire$Empire_View$project_url, _p16, _p17)),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(_p15),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(' ('),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$a,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$href(
+																A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	A2(_brainrape$empire$Empire_View$project_url, _p16, _p17),
+																	'/issues')),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(
+																A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(_p11.open_issues_count),
+																	' issues')),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html$text(')'),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									}
+								}
 							}),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
+				_1: {
+					ctor: '::',
+					_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$row(
+						{
+							ctor: '::',
+							_0: A2(
+								_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$column,
+								{
+									ctor: '::',
+									_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$ExtraSmall(_JeremyBellows$elm_bootstrapify$Bootstrap_Grid$Twelve),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{ctor: '[]'},
+										A2(
+											_elm_lang$core$List$map,
+											A2(_brainrape$empire$Empire_View$view_branch, _p16, _p15),
+											A2(
+												_elm_lang$core$List$sortBy,
+												function (_) {
+													return _.name;
+												},
+												A2(
+													_elm_lang$core$List$filter,
+													function (_p12) {
+														return A2(
+															F2(
+																function (x, y) {
+																	return !_elm_lang$core$Native_Utils.eq(x, y);
+																}),
+															'master',
+															function (_) {
+																return _.name;
+															}(_p12));
+													},
+													_elm_lang$core$Dict$values(_p14))))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _brainrape$empire$Empire_View$view = function (_p18) {
 	var _p19 = _p18;
+	var _p20 = _p19.token;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -10371,13 +10377,13 @@ var _brainrape$empire$Empire_View$view = function (_p18) {
 			A2(_elm_lang$core$List$map, _brainrape$empire$Empire_View$stylesheet, _brainrape$empire$Empire_View$css_urls),
 			{
 				ctor: '::',
-				_0: A2(_brainrape$empire$Empire_View$view_config, _p19.config_visible, _p19.token),
+				_0: A2(_brainrape$empire$Empire_View$view_config, _p19.config_visible, _p20),
 				_1: {
 					ctor: '::',
 					_0: _JeremyBellows$elm_bootstrapify$Bootstrap_Grid$containerFluid(
 						A2(
 							_elm_lang$core$List$map,
-							_brainrape$empire$Empire_View$view_project,
+							_brainrape$empire$Empire_View$view_project(_p20),
 							A2(
 								_elm_lang$core$List$sortBy,
 								function (_) {

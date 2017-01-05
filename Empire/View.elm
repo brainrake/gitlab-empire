@@ -58,12 +58,12 @@ view_branch org project { name, plus, minus, pipeline, mr } = tr []
   , span [] [ a [ href (branch_url org project name) ] [ text name ] ]
   , div [] (Maybe.map (view_mr org project pipeline) mr ? []) ]
 
-view_project : Project -> Html Msg
-view_project { org, name, path, avatar_url, open_issues_count, branches } = div []
+view_project : String -> Project -> Html Msg
+view_project token { org, name, path, avatar_url, open_issues_count, branches } = div []
   [ row [ column [ ExtraSmall Twelve ]
           [ if String.isEmpty avatar_url
             then span [ class "octicon octicon-repo"] []
-            else img [ src avatar_url, width "16px"] []
+            else img [ src <| avatar_url ++ "?private_token=" ++ token, width "16px"] []
           , text " "
           , view_pipeline org name (get "master" branches |> andThen .pipeline)
           , b [] [ a [ href (project_url org path) ] [ text name ] ]
@@ -101,5 +101,5 @@ stylesheet url = node "link" [ attribute "rel" "stylesheet", attribute "href" ur
 view : Model -> Html Msg
 view { projects, error, config_visible, token } = div [] <| map stylesheet css_urls ++
   [ view_config config_visible token
-  , containerFluid (projects |> values |> sortBy .name |> map view_project)
+  , containerFluid (projects |> values |> sortBy .name |> map (view_project token))
   , div [] [ text <| Maybe.map ((++) "Error: ") error ? "" ] ]
