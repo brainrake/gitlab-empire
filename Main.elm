@@ -99,6 +99,10 @@ update_pipelines project_id pipelines id project =
       { branch | pipeline = pipelines |> filter (.ref >> (==) name) |> head } ) }
 
 
+error_message : String
+error_message =
+  "There was an error fetching the results. Please check the console for details."
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
   Tick t -> ( model, if model.config_visible || String.isEmpty model.token
@@ -110,7 +114,7 @@ update msg model = case msg of
   ChangeToken token ->
     ( { model | token = token }, Cmd.none )
   ProjectsResponse (Err err) ->
-    ( { model | error = Just <| toString err } , Cmd.none)
+    ( { model | error = (always <| Just error_message) (Debug.log "Error:" err) } , Cmd.none)
   ProjectsResponse (Ok projects) ->
     ( { model | projects = Dict.map (update_project model.projects) projects
               , error = Nothing }
