@@ -10966,7 +10966,10 @@ var _brainrape$empire$Main$get_projects = A3(
 											_elm_lang$core$Json_Decode$string)),
 									A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
 								A2(_elm_lang$core$Json_Decode$field, 'path', _elm_lang$core$Json_Decode$string)),
-							A2(_elm_lang$core$Json_Decode$field, 'description', _elm_lang$core$Json_Decode$string)),
+							A2(
+								_elm_community$json_extra$Json_Decode_Extra$withDefault,
+								'',
+								A2(_elm_lang$core$Json_Decode$field, 'description', _elm_lang$core$Json_Decode$string))),
 						A2(
 							_elm_community$json_extra$Json_Decode_Extra$withDefault,
 							'',

@@ -38,7 +38,7 @@ get_projects = request "/projects?" ProjectsResponse
     |: at [ "namespace", "name" ] string
     |: field "name" string
     |: field "path" string
-    |: field "description" string
+    |: (field "description" string |> JE.withDefault "")
     |: (field "avatar_url" string |> JE.withDefault "")
     |: field "open_issues_count" int
     |: succeed empty)
